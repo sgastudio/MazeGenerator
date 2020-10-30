@@ -1,70 +1,70 @@
-#include "vector2.h"
+#include "Vector2.h"
 
-ostream& operator<<(ostream& out, vector2 A)
+ostream& operator<<(ostream& out, Vector2 vec)
 {
-	out << "(" << A.x << "," << A.y << ")";
+	out << "(" << vec.x << "," << vec.y << ")";
 	return out;
 }
 
-istream& operator>>(istream& in, vector2& A)
+istream& operator>>(istream& in, Vector2& vec)
 {
-	in >> A.x >> A.y;
+	in >> vec.x >> vec.y;
 	return in;
 }
 
-vector2::vector2()
+Vector2::Vector2()
 {
 	x = 0;
 	y = 0;
 }
 
-vector2::vector2(int valX, int valY)
+Vector2::Vector2(int valX, int valY)
 {
 	x = valX;
 	y = valY;
 }
 
-int vector2::Set(int valX, int valY)
+void Vector2::Set(int valX, int valY)
 {
 	x = valX; y = valY;
 }
 
-vector2 vector2::operator+(int val)
+Vector2 Vector2::operator+(int val)
 {
-	return vector2(x + val, y + val);
+	return Vector2(x + val, y + val);
 }
 
-vector2 vector2::operator-(int val)
+Vector2 Vector2::operator-(int val)
 {
-	return vector2(x - val, y - val);
+	return Vector2(x - val, y - val);
 }
 
-vector2 vector2::operator+(vector2 v2)
+Vector2 Vector2::operator+(Vector2 vec)
 {
-	return vector2(x + v2.x, y + v2.y);
+	return Vector2(x + vec.x, y + vec.y);
 }
 
-vector2 vector2::operator+=(vector2 v2)
+Vector2 Vector2::operator+=(Vector2 vec)
 {
-	return vector2(x + v2.x, y + v2.y);
+	return Vector2(x + vec.x, y + vec.y);
 }
 
-vector2 vector2::operator-(vector2 v2)
+Vector2 Vector2::operator-(Vector2 vec)
 {
-	return vector2(x - v2.x, y - v2.y);
+	return Vector2(x - vec.x, y - vec.y);
 }
 
-vector2 vector2::operator-=(vector2 v2)
+Vector2 Vector2::operator-=(Vector2 vec)
 {
-	return vector2(x - v2.x, y - v2.y);
+	return Vector2(x - vec.x, y - vec.y);
 }
 
-vector2 vector2::operator*(int val)
+Vector2 Vector2::operator*(int val)
 {
-	return vector2(x * val, y * val);
+	return Vector2(x * val, y * val);
 }
 
-bool vector2::operator==(vector2 v2)
+bool Vector2::operator==(Vector2 vec)
 {
-	return x == v2.x && y == v2.y;
+	return x == vec.x && y == vec.y;
 }

@@ -4,21 +4,21 @@
 using namespace std;
 
 
-typedef class vector2 {
+typedef class Vector2 {
 public:
-	vector2();
-	vector2(int valX, int valY);
+	Vector2();
+	Vector2(int valX, int valY);
 	int x;
 	int y;
-	int Set(int valX, int valY);
-	vector2 operator+ (int val) ;
-	vector2 operator- (int val);
-	vector2 operator+ (vector2 v2) ;
-	vector2 operator+= (vector2 v2) ;
-	vector2 operator- (vector2 v2) ;
-	vector2 operator-= (vector2 v2) ;
-	vector2 operator* (int val) ;
-	bool operator== (vector2 v2);
-	friend ostream& operator<<(ostream& out, vector2 A);
-	friend istream& operator>>(istream& in, vector2& A);
-}v2, vec2, Vector2;
+	void Set(int valX, int valY);
+	Vector2 operator+ (int val) ;
+	Vector2 operator- (int val);
+	Vector2 operator+ (Vector2 vec) ;
+	Vector2 operator+= (Vector2 vec) ;
+	Vector2 operator- (Vector2 vec) ;
+	Vector2 operator-= (Vector2 vec) ;
+	Vector2 operator* (int val) ;
+	bool operator== (Vector2 vec);
+	friend ostream& operator<<(ostream& out, Vector2 vec);
+	friend istream& operator>>(istream& in, Vector2& vec);
+}v2, vec2, vector2;
