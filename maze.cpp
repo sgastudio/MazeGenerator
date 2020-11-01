@@ -223,10 +223,12 @@ void Maze::GenerateDeepFisrt()
 
 void Maze::_DeepFirstRecursion(Vector2 pos)
 {
-	if (GetData(pos) == ' ')
-		return;
 	if (CheckOnEdge(pos))
 		return;
+
+	//Set Current block to space
+	this->SetData(pos, ' ');
+
 	//Randomrize direction index
 	Vector2 direction[4] = { {0,1},{0,-1},{1,0},{-1,0} };
 	for (int i = 0; i < 4; i++)
@@ -237,18 +239,33 @@ void Maze::_DeepFirstRecursion(Vector2 pos)
 		direction[randDirection] = tempVec;
 	}
 
-	//Set Current block to space
-	this->SetData(pos, ' ');
-
 	//process with direction index
 	for (int i = 0; i < 4; i++)
 	{
 
+		Vector2 nextPos = pos;
+		int digRange = 1 + rand() % 1;
+		while (digRange > 0)
+		{
+			nextPos = nextPos + direction[i];
+			if (GetData(nextPos) == ' ')
+				break;
+			if (CheckOnEdge(nextPos))
+				break;
+			if (GetDataCrossCount(nextPos, ' ') > 1)
+				break;
+			digRange--;
+			SetData(nextPos, ' ');
+		}
+		if (digRange <= 0)
+			this->_DeepFirstRecursion(nextPos);
+
+		/*
 		Vector2 nextPos = pos + direction[i];
 		if (GetDataCrossCount(nextPos, ' ') < 2)
 		{
 			this->_DeepFirstRecursion(nextPos);
-		}
+		}*/
 	}
 }
 
