@@ -48,10 +48,10 @@ short Maze::GetData(Vector2 pos)
 	return m_data[pos.x + pos.y * m_size.x];
 }
 
-int Maze::GetDataCrossCount(Vector2 pos,short data)
+int Maze::GetDataCrossCount(Vector2 pos, short data)
 {
 	int count = 0;
-	
+
 	if (GetData(pos + Vector2(1, 0)) == data)
 		count++;
 	if (GetData(pos + Vector2(-1, 0)) == data)
@@ -86,7 +86,7 @@ short* Maze::GetDataPointer(Vector2 pos)
 
 bool Maze::CheckOnEdge(Vector2 pos)
 {
-	return pos.x == 0 || pos.x == m_size.x - 1 || pos.y == 0 || pos.y==m_size.y-1;
+	return pos.x == 0 || pos.x == m_size.x - 1 || pos.y == 0 || pos.y == m_size.y - 1;
 }
 
 void Maze::SetData(Vector2 pos, short inputData)
@@ -243,19 +243,12 @@ void Maze::_DeepFirstRecursion(Vector2 pos)
 	//process with direction index
 	for (int i = 0; i < 4; i++)
 	{
-		//int digRange = 1;
-		Vector2 nextPos = pos+direction[i];
-		//while (digRange > 1)
-		//{
-			
-			//nextPos += ;
 
-			if (GetDataCrossCount(nextPos, ' ') < 2)
-			{
-				this->_DeepFirstRecursion(nextPos);
-			}
-			//--digRange;
-		//}
+		Vector2 nextPos = pos + direction[i];
+		if (GetDataCrossCount(nextPos, ' ') < 2)
+		{
+			this->_DeepFirstRecursion(nextPos);
+		}
 	}
 }
 
