@@ -41,11 +41,17 @@ Vector2 Vector2::operator-(int val)
 
 Vector2 Vector2::operator+(Vector2 vec)
 {
+	//x += vec.x;
+	//y += vec.y;
+	//return Vector2(x, y);
 	return Vector2(x + vec.x, y + vec.y);
 }
 
 Vector2 Vector2::operator+=(Vector2 vec)
 {
+	//x += vec.x;
+	//y += vec.y;
+	//return Vector2(x, y);
 	return Vector2(x + vec.x, y + vec.y);
 }
 
@@ -62,6 +68,13 @@ Vector2 Vector2::operator-=(Vector2 vec)
 Vector2 Vector2::operator*(int val)
 {
 	return Vector2(x * val, y * val);
+}
+
+Vector2 Vector2::operator/(int val)
+{
+	if (val == 0)
+		return Vector2(x, y);
+	return Vector2(x / val, y / val);
 }
 
 bool Vector2::operator==(Vector2 vec)
