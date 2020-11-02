@@ -101,10 +101,10 @@ int Maze::GetDataCrossCount(Vector2 pos, short data)
 	if (GetData(pos + Vector2(0, -1)) == data)
 		count++;
 
-	if (pos.x<0 || pos.x>m_size.x)
+	/*if (pos.x<0 || pos.x>m_size.x)
 		count++;
 	if (pos.y<0 || pos.y>m_size.y)
-		count++;
+		count++;*/
 	/*
 	for (int j = pos.x - 1; j < pos.x + 2; j++)
 	{
@@ -124,9 +124,24 @@ short* Maze::GetDataPointer(Vector2 pos)
 	return &m_data[pos.x + pos.y * m_size.x];
 }
 
+bool Maze::CheckGenerated()
+{
+	if (m_size.x != 0 && m_size.y != 0)
+		return true;
+	else
+		return false;
+}
+
 bool Maze::CheckOnEdge(Vector2 pos)
 {
 	return pos.x == 0 || pos.x == m_size.x - 1 || pos.y == 0 || pos.y == m_size.y - 1;
+}
+
+bool Maze::CheckInsideCenterRectangle(Vector2 pos, Vector2 quarterSize)
+{
+	bool verticalCheck = pos.x>=m_size.x/2 - quarterSize.x && pos.x <= m_size.x / 2 + quarterSize.x;
+	bool horizontalCheck = pos.y >= m_size.y / 2 - quarterSize.y && pos.y <= m_size.y / 2 + quarterSize.y;
+	return verticalCheck && horizontalCheck;
 }
 
 void Maze::SetData(Vector2 pos, short inputData)
@@ -200,6 +215,7 @@ bool Maze::LoadFromFile(string fileName)
 
 	//allocate data sapce
 	this->Init();
+	m_exit = new int[(m_size.x + m_size.y) * 2];
 
 	//load data
 	for (int i = 0; i < m_size.y; i++)
@@ -353,7 +369,9 @@ bool Maze::_DeepFirstFindRecursion(Vector2 pos)
 {
 	if (CheckOnEdge(pos))
 		return false;
-	if (GetData(pos) != DEFAULT_STORAGE_ROUTE_CHAR)
+	if (CheckInsideCenterRectangle(pos, Vector2(1, 1)) || GetData(pos) == DEFAULT_STORAGE_START_CHAR)
+		return true;
+	if (this->GetDataCrossCount(pos, DEFAULT_STORAGE_ROUTE_CHAR) == 0)
 		return false;
 	//Randomrize direction index
 	Vector2 direction[4] = { {0,1},{0,-1},{1,0},{-1,0} };
@@ -369,27 +387,26 @@ bool Maze::_DeepFirstFindRecursion(Vector2 pos)
 	this->SetData(pos, '?');
 
 	//progress with direction index
+	int pathCount = 4 ;
 	for (int i = 0; i < 4; i++)
 	{
 		Vector2 nextPos = pos + direction[i];
 		short nextPosData = GetData(nextPos);
-		
+		if (GetData(nextPos) == DEFAULT_STORAGE_PATH_CHAR)
+			break;
 		if (GetDataCrossCount(nextPos, DEFAULT_STORAGE_ROUTE_CHAR) >= 1)
 		{
-			/*if (this->_DeepFirstFindRecursion(nextPos) == false)
+			
+			if (_DeepFirstFindRecursion(nextPos) == false)
 			{
-				break;
-			}*/
-			_DeepFirstFindRecursion(nextPos);
-		}
-		else
-		{
-			break;
+				this->SetData(pos, DEFAULT_STORAGE_PATH_CHAR);
+				pathCount--;
+			}
 		}
 	}
 
-	Sleep(50);
-	this->Print(true);
+	//this->SetData(pos, DEFAULT_STORAGE_ROUTE_CHAR);
+	return false;
 }
 
 void Maze::_InsertStartPoint()

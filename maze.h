@@ -26,14 +26,19 @@ public:
 	void Init();
 	void Init(Vector2 sizeLimit);
 	void Init(Vector2 m_sizeLimit, int exitCount);
+
 	Vector2 GetPosByIndex(int index);
 	short GetData(Vector2 pos);
 	int GetDataCrossCount(Vector2 pos, short data);
 	short* GetDataPointer(Vector2 pos);
+
+	bool CheckGenerated();
+
 	bool CheckOnEdge(Vector2 pos);
+	bool CheckInsideCenterRectangle(Vector2 pos, Vector2 quarterSize);
 	void SetData(Vector2 pos, short inputData);
 	void SetData(int index, short inputData);
-	void SetDataRectangle(Vector2 center, Vector2 size,short inputData);
+	void SetDataRectangle(Vector2 center, Vector2 quarterSize,short inputData);
 	void SetDataAll(short inputData);
 	void SetDataSurrounding(short wallData);
 	bool LoadFromFile(string fileName);
