@@ -19,10 +19,14 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="maze.cpp" />
     <ClCompile Include="MazeGenerator.cpp" />
+    <ClCompile Include="Screen.cpp" />
     <ClCompile Include="vector2.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="maze.h" />
+    <ClInclude Include="Screen.h" />
     <ClInclude Include="vector2.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
@@ -37,7 +41,7 @@
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
-    <CharacterSet>Unicode</CharacterSet>
+    <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>

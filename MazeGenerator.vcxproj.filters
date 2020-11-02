@@ -21,9 +21,21 @@
     <ClCompile Include="vector2.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="Screen.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="maze.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="vector2.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="maze.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Screen.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
