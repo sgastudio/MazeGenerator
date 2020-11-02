@@ -22,3 +22,21 @@ public:
 	friend ostream& operator<<(ostream& out, Vector2 vec);
 	friend istream& operator>>(istream& in, Vector2& vec);
 }v2, vec2, vector2;
+
+typedef class Vector2List {
+public:
+	Vector2 data;
+	Vector2List* next;
+	Vector2List();
+	Vector2List(Vector2 vec);
+	~Vector2List();
+	void Swap(Vector2List* nodeA, Vector2List* nodeB);
+	void Swap(Vector2List* nodeB);
+
+	void Push(Vector2 vec);
+	void Push(int x, int y);
+	Vector2 Pop();
+	void Insert(int index, Vector2 vec);
+	void Remove(int index);
+	void Remove();
+}Vector2Node;

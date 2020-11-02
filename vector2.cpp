@@ -81,3 +81,54 @@ bool Vector2::operator==(Vector2 vec)
 {
 	return x == vec.x && y == vec.y;
 }
+
+Vector2List::Vector2List()
+{
+	data = Vector2();
+	next = NULL;
+}
+
+Vector2List::Vector2List(Vector2 vec)
+{
+	data = vec;
+	next = NULL;
+}
+
+Vector2List::~Vector2List()
+{
+	if (next != NULL)
+		delete next;
+}
+
+void Vector2List::Push(Vector2 vec)
+{
+	Vector2List* p = this->next;
+	while (p->next!=NULL)
+	{
+		p = p->next;
+	}
+	p->next = new Vector2List(vec);
+}
+
+void Vector2List::Push(int x, int y)
+{
+	Push(Vector2(x, y));
+}
+
+void Vector2List::Remove(int index)
+{
+
+}
+
+void Vector2List::Remove()
+{
+	Vector2List* p = this->next;
+	if (p == NULL)
+		return;
+	
+	while (p->next != NULL)
+	{
+		p = p->next;
+	}
+	delete p;
+}
