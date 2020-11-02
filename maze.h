@@ -3,23 +3,37 @@
 #include <string>
 #include <iostream>
 #include <fstream>
+
+
+
 class Maze {
 protected:
 	Vector2 m_size;
 	short* m_data;
 	Vector2 m_start;
-	Vector2 m_exit;
+	int* m_exit;
+	int m_exitCount;
+	int m_requireExitCount;
+	void _DeepFirstGenerateRecursion(Vector2 pos);
+	bool _DeepFirstFindRecursion(Vector2 pos);
+	void _InsertStartPoint();
+	void _InsertExitPoints();
 public:
 	Maze();
 	Maze(Vector2 sizeLimit);
+	Maze(Vector2 sizeLimit, int exitCount);
 	~Maze();
 	void Init();
 	void Init(Vector2 sizeLimit);
+	void Init(Vector2 m_sizeLimit, int exitCount);
+	Vector2 GetPosByIndex(int index);
 	short GetData(Vector2 pos);
 	int GetDataCrossCount(Vector2 pos, short data);
 	short* GetDataPointer(Vector2 pos);
 	bool CheckOnEdge(Vector2 pos);
 	void SetData(Vector2 pos, short inputData);
+	void SetData(int index, short inputData);
+	void SetDataRectangle(Vector2 center, Vector2 size,short inputData);
 	void SetDataAll(short inputData);
 	void SetDataSurrounding(short wallData);
 	bool LoadFromFile(string fileName);
@@ -27,11 +41,8 @@ public:
 	void Generate();
 	void GenerateRandomPrime();
 	void GenerateDeepFisrt();
-	void _DeepFirstRecursion(Vector2 pos);
-	void _InsertStartPoint();
-	void _PinExitPoints();
 	void FindPath();
 	void FindPathDeepFirst();
 	void FindPathAStar();
-	void Print();
+	void Print(bool showPaths=false);
 };
