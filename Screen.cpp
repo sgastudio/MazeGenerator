@@ -40,6 +40,7 @@ void Screen::PrintMainMenu()
 {
 	string screenText;
 	screenText += "\t" + m_msg + "\n";
+	m_msg = "";
 	screenText += "\t+---------------------------------------------+\n";
 	screenText += "\t|                                             |\n";
 	screenText += "\t|         1. Generate                         |\n";
@@ -76,6 +77,7 @@ void Screen::PrintCredits()
 
 void Screen::Pause()
 {
+	cout << "\t";
 	system("pause");
 }
 
