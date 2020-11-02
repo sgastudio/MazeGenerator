@@ -355,9 +355,6 @@ bool Maze::_DeepFirstFindRecursion(Vector2 pos)
 		return false;
 	if (GetData(pos) != DEFAULT_STORAGE_ROUTE_CHAR)
 		return false;
-	if (GetDataCrossCount(pos, DEFAULT_STORAGE_WALL_CHAR) >= 3)
-		return false;
-
 	//Randomrize direction index
 	Vector2 direction[4] = { {0,1},{0,-1},{1,0},{-1,0} };
 	for (int i = 0; i < 4; i++)
@@ -369,21 +366,29 @@ bool Maze::_DeepFirstFindRecursion(Vector2 pos)
 	}
 
 	//Set Current block to path
-	this->SetData(pos, DEFAULT_STORAGE_PATH_CHAR);
+	this->SetData(pos, '?');
 
 	//progress with direction index
 	for (int i = 0; i < 4; i++)
 	{
 		Vector2 nextPos = pos + direction[i];
 		short nextPosData = GetData(nextPos);
-		if(GetDataCrossCount(pos, DEFAULT_STORAGE_WALL_CHAR)+ GetDataCrossCount(pos, DEFAULT_STORAGE_EXIT_CHAR))
-		if (this->_DeepFirstFindRecursion(nextPos) == false)
+		
+		if (GetDataCrossCount(nextPos, DEFAULT_STORAGE_ROUTE_CHAR) >= 1)
 		{
-			this->SetData(pos, DEFAULT_STORAGE_ROUTE_CHAR);
+			/*if (this->_DeepFirstFindRecursion(nextPos) == false)
+			{
+				break;
+			}*/
+			_DeepFirstFindRecursion(nextPos);
+		}
+		else
+		{
+			break;
 		}
 	}
-	
-	Sleep(1000);
+
+	Sleep(50);
 	this->Print(true);
 }
 
@@ -430,7 +435,7 @@ void Maze::_InsertExitPoints()
 		m_exit[i] = m_exit[randIndex];
 		m_exit[randIndex] = tempInt;
 	}
-
+	m_exitCount = m_requireExitCount;
 	for (int i = 0; i < m_requireExitCount; i++)
 	{
 		SetData(m_exit[i], DEFAULT_STORAGE_EXIT_CHAR);
@@ -486,7 +491,7 @@ void Maze::Print(bool showPaths/* =FALSE */)
 				cout << DEFAULT_DISPLAY_ROUTE_CHAR;
 				break;
 			default:
-				cout << '?';
+				cout << "\033[31m" << '?' << "\033[0m";
 				break;
 			}
 		}
