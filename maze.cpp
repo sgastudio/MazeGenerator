@@ -26,6 +26,7 @@ Maze::Maze()
 	m_exit = NULL;
 	m_exitCount = 0;
 	m_requireExitCount = 0;
+	m_difficulty = 0;
 }
 
 Maze::Maze(Vector2 sizeLimit)
@@ -42,6 +43,16 @@ Maze::Maze(Vector2 sizeLimit, int exitCount)
 	m_start = Vector2();
 	m_exit = NULL;
 	m_exitCount = 0;
+	m_difficulty = 1;
+}
+
+Maze::Maze(Vector2 sizeLimit, int difficulty ,int exitCount)
+{
+	Init(sizeLimit, exitCount);
+	m_start = Vector2();
+	m_exit = NULL;
+	m_exitCount = 0;
+	m_difficulty = difficulty;
 }
 
 Maze::~Maze()
@@ -71,10 +82,11 @@ void Maze::Init(Vector2 m_sizeLimit)
 	Init(m_sizeLimit, 2);
 }
 
-void Maze::Init(Vector2 m_sizeLimit, int exitCount)
+void Maze::Init(Vector2 m_sizeLimit, int difficulty, int exitCount)
 {
 	m_size = m_sizeLimit;
 	m_requireExitCount = exitCount;
+	m_difficulty = difficulty;
 	Init();
 }
 
@@ -340,7 +352,7 @@ void Maze::_DeepFirstGenerateRecursion(Vector2 pos)
 	{
 
 		Vector2 nextPos = pos;
-		int digRange = 1 + rand() % 4;
+		int digRange = 1 + rand() % m_difficulty;
 		while (digRange > 0)
 		{
 			nextPos = nextPos + direction[i];

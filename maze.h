@@ -14,6 +14,7 @@ protected:
 	int* m_exit;
 	int m_exitCount;
 	int m_requireExitCount;
+	int m_difficulty;
 	void _DeepFirstGenerateRecursion(Vector2 pos);
 	bool _DeepFirstFindRecursion(Vector2 pos);
 	void _InsertStartPoint();
@@ -22,10 +23,11 @@ public:
 	Maze();
 	Maze(Vector2 sizeLimit);
 	Maze(Vector2 sizeLimit, int exitCount);
+	Maze(Vector2 sizeLimit, int difficulty, int exitCount);
 	~Maze();
 	void Init();
 	void Init(Vector2 sizeLimit);
-	void Init(Vector2 m_sizeLimit, int exitCount);
+	void Init(Vector2 m_sizeLimit, int difficulty, int exitCount = 1);
 
 	Vector2 GetPosByIndex(int index);
 	short GetData(Vector2 pos);

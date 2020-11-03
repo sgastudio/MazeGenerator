@@ -22,7 +22,8 @@ int main(void)
     string fileAddr;
     int input;
     int exitCount;
-    int difficulty;
+    int density;
+    int densityMax;
     Vector2 mazeSize;
 
     screenAgent.SetWndTitle(TEXT("Maze Generator"));
@@ -42,12 +43,13 @@ int main(void)
             mazeSize.LimitMin(Vector2(10, 10));
             exitCount = screenAgent.InputInt("Please input how many exits do you need ?\n\t(min=1 max=" + to_string((mazeSize.x + mazeSize.y) * 2 - 4)+")");
             Vector2::LimitInt(&exitCount, Vector2(1, (mazeSize.x + mazeSize.y) * 2 - 4));
-            difficulty = screenAgent.InputInt("How difficult should it be?\n\t(min=0 max="+to_string(min(mazeSize.x, mazeSize.y))+")");
-            Vector2::LimitInt(&difficulty, Vector2(0, min(mazeSize.x, mazeSize.y)));
-            mazeAgent.Init(mazeSize,exitCount);
+            densityMax = max(mazeSize.x, mazeSize.y) / 10;
+            density = screenAgent.InputInt("How dense should it be?\n\t(min=1 max="+to_string(densityMax)+")");
+            Vector2::LimitInt(&density, Vector2(1, densityMax));
+            mazeAgent.Init(mazeSize, densityMax - density + 1, exitCount);
             mazeAgent.Generate();
             //mazeAgent.FindPath();
-            screenAgent.SetMsg("\033[32mMaze " + to_string(mazeSize.x) + "x" + to_string(mazeSize.y) + " with " + to_string(exitCount) + " exits generated.\033[0m");
+            screenAgent.SetMsg("\033[32mMaze " + to_string(mazeSize.x) + "x" + to_string(mazeSize.y) + " "+to_string(density)+" level " + to_string(exitCount) + " exits generated.\033[0m");
             break;
         case MENU_SELECTIONS_E::Load:
             fileAddr = screenAgent.InputString("Please the filename you want to load:");
