@@ -59,7 +59,7 @@ int main(void)
                 break;
             }
             if (mazeAgent.LoadFromFile(fileAddr))
-                screenAgent.SetMsg("\033[32mMaze loaded.\033[0m");
+                screenAgent.SetMsg("\033[32mMaze loaded.You can preview it now.\033[0m");
             else
                 screenAgent.SetMsg("\033[33mMaze load fail.\033[0m");
             break;
