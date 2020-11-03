@@ -22,6 +22,7 @@ public:
 	Vector2 operator* (int val) ;
 	Vector2 operator/(int val);
 	bool operator== (Vector2 vec);
+	bool operator!=(Vector2 vec);
 	friend ostream& operator<<(ostream& out, Vector2 vec);
 	friend istream& operator>>(istream& in, Vector2& vec);
 }v2, vec2, vector2;

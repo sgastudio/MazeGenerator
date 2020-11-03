@@ -106,6 +106,11 @@ bool Vector2::operator==(Vector2 vec)
 	return x == vec.x && y == vec.y;
 }
 
+bool Vector2::operator!=(Vector2 vec)
+{
+	return x != vec.x || y != vec.y;
+}
+
 Vector2List::Vector2List()
 {
 	data = Vector2();
