@@ -1,9 +1,13 @@
 #pragma once
+#include "stack.h"
 #include "vector2.h"
+
 #include <string>
 #include <iostream>
 #include <fstream>
-
+#include <string>
+#include <ctime>
+#include <windows.h>
 
 
 class Maze {

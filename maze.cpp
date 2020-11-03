@@ -1,8 +1,4 @@
 #include "maze.h"
-#include <iostream>
-#include <string>
-#include <ctime>
-#include <windows.h>
 
 using namespace std;
 
@@ -318,6 +314,7 @@ void Maze::Generate()
 	m_start = (m_size - 1) / 2;
 	srand((unsigned)time(NULL));
 	this->GenerateDeepFisrt();
+	this->FindPath();
 }
 
 void Maze::GenerateDeepFisrt()
@@ -384,12 +381,23 @@ void Maze::_DeepFirstGenerateRecursion(Vector2 pos)
 
 bool Maze::_DeepFirstFindRecursion(Vector2 pos)
 {
-	if (CheckOnEdge(pos))
-		return false;
-	if (CheckInsideCenterRectangle(pos, Vector2(1, 1)) || GetData(pos) == DEFAULT_STORAGE_START_CHAR)
+	if (GetData(pos) == 'S')
 		return true;
-	if (this->GetDataCrossCount(pos, DEFAULT_STORAGE_ROUTE_CHAR) == 0)
+	if (GetDataCrossCount(pos, 'S') >= 1)
+	{
+		SetData(pos, 'o');
+		return true;
+	}
+	if (GetDataCrossCount(pos, 'o') >= 1)
+	{
+		SetData(pos, 'o');
+		return true;
+	}
+	if (GetData(pos) == 'o')
+		return true;
+	if (GetDataCrossCount(pos, ' ') < 1)
 		return false;
+
 	//Randomrize direction index
 	Vector2 direction[4] = { {0,1},{0,-1},{1,0},{-1,0} };
 	for (int i = 0; i < 4; i++)
@@ -401,28 +409,29 @@ bool Maze::_DeepFirstFindRecursion(Vector2 pos)
 	}
 
 	//Set Current block to path
-	this->SetData(pos, '?');
+	this->SetData(pos, '-');
+	//m_pathFinder.Push(pos);
 
+	Vector2 nextPos;
 	//progress with direction index
-	int pathCount = 4 ;
 	for (int i = 0; i < 4; i++)
 	{
-		Vector2 nextPos = pos + direction[i];
+		nextPos = pos + direction[i];
 		short nextPosData = GetData(nextPos);
-		if (GetData(nextPos) == DEFAULT_STORAGE_PATH_CHAR)
-			break;
-		if (GetDataCrossCount(nextPos, DEFAULT_STORAGE_ROUTE_CHAR) >= 1)
+
+		if (nextPosData==DEFAULT_STORAGE_ROUTE_CHAR)
 		{
-			
-			if (_DeepFirstFindRecursion(nextPos) == false)
+			if (_DeepFirstFindRecursion(nextPos)==true)
 			{
-				this->SetData(pos, DEFAULT_STORAGE_PATH_CHAR);
-				pathCount--;
+				this->SetData(pos, 'o');
+				return true;
 			}
 		}
+		this->Print(true);
+		Sleep(500);
 	}
 
-	//this->SetData(pos, DEFAULT_STORAGE_ROUTE_CHAR);
+	this->SetData(pos, ' ');
 	return false;
 }
 
@@ -516,7 +525,7 @@ void Maze::Print(bool showPaths/* =FALSE */)
 				cout << "\033[32m" << DEFAULT_DISPLAY_EXIT_CHAR << "\033[0m";
 				break;
 			case DEFAULT_STORAGE_PATH_CHAR:
-				if (showPaths)
+				if (showPaths==true)
 					cout << "\033[32m" << DEFAULT_DISPLAY_PATH_CHAR << "\033[0m";
 				else
 					cout << DEFAULT_DISPLAY_ROUTE_CHAR;
@@ -525,7 +534,7 @@ void Maze::Print(bool showPaths/* =FALSE */)
 				cout << DEFAULT_DISPLAY_ROUTE_CHAR;
 				break;
 			default:
-				cout << "\033[31m" << '?' << "\033[0m";
+				cout << "\033[31m" << 'U' << "\033[0m";
 				break;
 			}
 		}
