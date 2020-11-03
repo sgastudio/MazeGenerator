@@ -22,6 +22,8 @@ public:
 	void PrintCredits();
 	void Pause();
 	void Clear();
+	void SetColor(string colorText);
+	void SetFont();
 	void SetMsg(string text);
 	void SetWndTitle(LPCWSTR text);
 	void SetWndSize(Vector2 size);
@@ -30,6 +32,7 @@ public:
 	void SetBufSize(int width, int height);
 	string InputString(string text);
 	bool InputBool(string text);
+	int InputInt(string text);
 	Vector2 InputVector2(string text);
 };
 
