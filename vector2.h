@@ -10,6 +10,9 @@ public:
 	int x;
 	int y;
 	void Set(int valX, int valY);
+	void LimitMin(Vector2 limit);
+	void LimitMax(Vector2 limit);
+	static void LimitInt(int* val, Vector2 limit);
 	Vector2 operator+ (int val) ;
 	Vector2 operator- (int val);
 	Vector2 operator+ (Vector2 vec) ;

@@ -29,6 +29,30 @@ void Vector2::Set(int valX, int valY)
 	x = valX; y = valY;
 }
 
+void Vector2::LimitMin(Vector2 limit)
+{
+	if (x < limit.x)
+		x = limit.x;
+	if (y < limit.y)
+		y = limit.y;
+}
+
+void Vector2::LimitMax(Vector2 limit)
+{
+	if (x > limit.x)
+		x = limit.x;
+	if (y > limit.y)
+		y = limit.y;
+}
+
+void Vector2::LimitInt(int* val, Vector2 limit) 
+{
+	if (*val < limit.x)
+		*val = limit.x;
+	if (*val > limit.y)
+		*val = limit.y;
+}
+
 Vector2 Vector2::operator+(int val)
 {
 	return Vector2(x + val, y + val);
