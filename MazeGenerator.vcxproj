@@ -27,6 +27,7 @@
   <ItemGroup>
     <ClInclude Include="maze.h" />
     <ClInclude Include="Screen.h" />
+    <ClInclude Include="stack.h" />
     <ClInclude Include="vector2.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
