@@ -1,12 +1,11 @@
 #include <windows.h>
-#include <stdio.h>
-#include <conio.h>
 #include <string>
 
 #include "maze.h"
 #include "Screen.h"
 
 using namespace std;
+
 enum MENU_SELECTIONS_E {
 Generate=1,
 Load,
@@ -15,23 +14,40 @@ Preview,
 Credit,
 Exit,
 };
+
 int main(void)
 {
     Screen screenAgent;
     Maze mazeAgent;
     string fileAddr;
     int input;
+    int exitCount;
+    int difficulty;
+    Vector2 mazeSize;
+
+    screenAgent.SetWndTitle(TEXT("Maze Generator"));
+    screenAgent.SetMsg("Set the 8x8 dot Font to gain better experience");
     do {
         screenAgent.Clear();
+        screenAgent.SetWndSize(63, 40);
+        //screenAgent.SetBufSize(65, 50);
         screenAgent.Menu();
         cin >> input;
         screenAgent.Clear();
+
         switch (input)
         {
         case MENU_SELECTIONS_E::Generate:
-            mazeAgent.Init(vector2(50, 50));
+            mazeSize = screenAgent.InputVector2("Please input how big the maze should be? \n\tAt least 10x10(e.g. 10 10)");
+            mazeSize.LimitMin(Vector2(10, 10));
+            exitCount = screenAgent.InputInt("Please input how many exits do you need ?\n\t(min=1 max=" + to_string((mazeSize.x + mazeSize.y) * 2 - 4)+")");
+            Vector2::LimitInt(&exitCount, Vector2(1, (mazeSize.x + mazeSize.y) * 2 - 4));
+            difficulty = screenAgent.InputInt("How difficult should it be?\n\t(min=0 max="+to_string(min(mazeSize.x, mazeSize.y))+")");
+            Vector2::LimitInt(&difficulty, Vector2(0, min(mazeSize.x, mazeSize.y)));
+            mazeAgent.Init(mazeSize,exitCount);
             mazeAgent.Generate();
-            screenAgent.SetMsg("\033[32mMaze 50x50 generated.\033[0m");
+            //mazeAgent.FindPath();
+            screenAgent.SetMsg("\033[32mMaze " + to_string(mazeSize.x) + "x" + to_string(mazeSize.y) + " with " + to_string(exitCount) + " exits generated.\033[0m");
             break;
         case MENU_SELECTIONS_E::Load:
             fileAddr = screenAgent.InputString("Please the filename you want to load:");
@@ -51,7 +67,7 @@ int main(void)
                 screenAgent.SetMsg("\033[31mPlease generate/load the maze before save it!\033[0m");
                 break;
             }
-            fileAddr = screenAgent.InputString("Please the filename you want to load:");
+            fileAddr = screenAgent.InputString("Please the filename you want to save:");
             if (fileAddr.empty() || fileAddr == "")
             {
                 screenAgent.SetMsg("\033[31mFilename cannot be empty!\033[0m");
@@ -68,9 +84,12 @@ int main(void)
                 screenAgent.SetMsg("\033[31mPlease generate/load the maze before preview it!\033[0m");
                 break;
             }
-            if (screenAgent.InputBool("Do you want to see the path to exit? (0 = No, 1 = Yes)"))
+            screenAgent.SetWndSize(mazeSize+1);
+            //screenAgent.SetBufSize(mazeSize);
+            if (screenAgent.InputBool("Do you want to see the path to exit? \n\t(0 = No, 1 = Yes)"))
             {
                 screenAgent.Clear();
+
                 mazeAgent.Print(true);
             }
             else
@@ -93,20 +112,6 @@ int main(void)
             break;
         }
     } while (true);
-
-
-   
-    //mazeAgent.LoadFromFile("testmaze1.txt");
-    mazeAgent.Print(true);
-    mazeAgent.FindPath();
-    mazeAgent.Print(true);
-
-    mazeAgent.SaveToFile("test3.txt");
-    cin;
-    //mazeAgent.LoadFromFile("test2.txt");
-    //mazeAgent.Print();
-
-
 
     /*
     HANDLE hOut;
@@ -135,7 +140,7 @@ int main(void)
     SetConsoleScreenBufferSize(hOut, size); // 重新设置缓冲区大小
     SMALL_RECT rc = { 0,0, 80 - 1, 25 - 1 }; // 重置窗口位置和大小
 
-    SetConsoleWindowInfo(hOut, true, &rc);
+
 
     _getch();
 
