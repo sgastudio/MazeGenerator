@@ -136,6 +136,11 @@ short* Maze::GetDataPointer(Vector2 pos)
 	return &m_data[pos.x + pos.y * m_size.x];
 }
 
+Vector2 Maze::GetSize()
+{
+	return m_size;
+}
+
 bool Maze::CheckGenerated()
 {
 	if (m_size.x != 0 && m_size.y != 0)

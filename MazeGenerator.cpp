@@ -86,7 +86,7 @@ int main(void)
                 screenAgent.SetMsg("\033[31mPlease generate/load the maze before preview it!\033[0m");
                 break;
             }
-            screenAgent.SetWndSize(mazeSize+1);
+            screenAgent.SetWndSize(mazeAgent.GetSize()+1);
             //screenAgent.SetBufSize(mazeSize);
             if (screenAgent.InputBool("Do you want to see the path to exit? \n\t(0 = No, 1 = Yes)"))
             {
@@ -114,46 +114,4 @@ int main(void)
             break;
         }
     } while (true);
-
-    /*
-    HANDLE hOut;
-
-    CONSOLE_SCREEN_BUFFER_INFO bInfo; // 存储窗口信息
-
-    COORD pos = { 0, 0 };
-
-    // 获取标准输出设备句柄
-
-    hOut = GetStdHandle(STD_OUTPUT_HANDLE);
-
-    // 获取窗口信息
-
-    GetConsoleScreenBufferInfo(hOut, &bInfo);
-    SetConsoleTitle("Maze Generator");
-
-    printf("\n\nThe soul selects her own society\n");
-
-    printf("Then shuts the door\n");
-
-    printf("On her devine majority\n");
-
-    printf("Obtrude no more\n\n");
-    COORD size = { 80, 25 };
-    SetConsoleScreenBufferSize(hOut, size); // 重新设置缓冲区大小
-    SMALL_RECT rc = { 0,0, 80 - 1, 25 - 1 }; // 重置窗口位置和大小
-
-
-
-    _getch();
-
-    // 向窗口中填充字符以获得清屏的效果
-
-    FillConsoleOutputCharacter(hOut, ' ', bInfo.dwSize.X * bInfo.dwSize.Y, pos, NULL);
-
-    // 关闭标准输出设备句柄
-
-    CloseHandle(hOut);
-
-    return 0;
-    */
 }

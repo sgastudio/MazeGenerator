@@ -33,6 +33,7 @@ public:
 	short GetData(Vector2 pos);
 	int GetDataCrossCount(Vector2 pos, short data);
 	short* GetDataPointer(Vector2 pos);
+	Vector2 GetSize();
 
 	bool CheckGenerated();
 
