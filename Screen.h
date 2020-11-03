@@ -30,9 +30,21 @@ public:
 	void SetWndSize(int width, int height);
 	void SetBufSize(Vector2 size);
 	void SetBufSize(int width, int height);
+	template <typename T>
+	T Input(string text);
 	string InputString(string text);
 	bool InputBool(string text);
 	int InputInt(string text);
 	Vector2 InputVector2(string text);
 };
 
+template<typename T>
+inline T Screen::Input(string text)
+{
+	string screenText;
+	screenText += "\t" + text + "\n\t";
+	cout << screenText;
+	T input;
+	cin >> input;
+	return input;
+}
