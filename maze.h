@@ -12,13 +12,17 @@
 
 class Maze {
 protected:
-	Vector2 m_size;
 	short* m_data;
+
+	Vector2 m_size;
+
 	Vector2 m_start;
 	int* m_exit;
 	int m_exitCount;
 	int m_requireExitCount;
+
 	int m_difficulty;
+
 	void _DeepFirstGenerateRecursion(Vector2 pos);
 	bool _DeepFirstFindRecursion(Vector2 pos);
 	void _InsertStartPoint();

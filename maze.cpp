@@ -118,6 +118,7 @@ int Maze::GetDataCrossCount(Vector2 pos, short data)
 		count++;
 	if (pos.y<0 || pos.y>m_size.y)
 		count++;*/
+
 	/*
 	for (int j = pos.x - 1; j < pos.x + 2; j++)
 	{
@@ -174,6 +175,11 @@ void Maze::SetData(int x, int y, short inputData)
 	SetData(Vector2(x,y),inputData);
 }
 
+/// <summary>
+/// set value of specific pos by index
+/// </summary>
+/// <param name="index">data index in m_data</param>
+/// <param name="inputData">value</param>
 void Maze::SetData(int index, short inputData)
 {
 	m_data[index] = inputData;
@@ -191,6 +197,10 @@ void Maze::SetDataRectangle(Vector2 center, Vector2 quarterSize, short inputData
 	}
 }
 
+/// <summary>
+/// set every element of m_data to inputData
+/// </summary>
+/// <param name="inputData">value to be set</param>
 void Maze::SetDataAll(short inputData)
 {
 	for (int i = 0; i < m_size.x * m_size.y; i++)
@@ -199,20 +209,20 @@ void Maze::SetDataAll(short inputData)
 	}
 }
 
-void Maze::SetDataSurrounding(short wallData)
+void Maze::SetDataSurrounding(short blockData)
 {
 	//set the sround wall to opened prevent drill through the maze
 	//horziontal
 	for (int i = 0; i < m_size.x; i++)
 	{
-		m_data[i] = wallData;
-		m_data[i + (m_size.y - 1) * m_size.x] = wallData;
+		m_data[i] = blockData;
+		m_data[i + (m_size.y - 1) * m_size.x] = blockData;
 	}
 	//vertical
 	for (int i = 0; i < m_size.y; i++)
 	{
-		m_data[i * m_size.x] = wallData;
-		m_data[i * m_size.x + m_size.x - 1] = wallData;
+		m_data[i * m_size.x] = blockData;
+		m_data[i * m_size.x + m_size.x - 1] = blockData;
 	}
 }
 
@@ -269,10 +279,6 @@ bool Maze::LoadFromFile(string fileName)
 			}
 			if (testString[j] == DEFAULT_DISPLAY_EXIT_CHAR)
 			{
-				//this->m_exit = Vector2(i, j);
-				//Vector2List.Push();
-				//m_exit->Push(Vector2(i, j));
-				//for(int count=0;count<m_exitCount;count++)
 				m_exit[m_exitCount] = i * m_size.x + j ;
 				m_exitCount++;
 			}
@@ -288,17 +294,20 @@ bool Maze::LoadFromFile(string fileName)
 	return true;
 }
 
+//save maze data to file
 bool Maze::SaveToFile(string fileName)
 {
 	//open file
 	ofstream outputFile;
 	outputFile.open(fileName, ios::out | ios::trunc);
 
-	//check avaliable
+	//check file avaliable
 	if (!outputFile.is_open())
-	{
 		return false;
-	}
+
+	//check if the maze had been generated
+	if (!this->CheckGenerated())
+		return false;
 
 	//save data to text
 	for (int i = 0; i < m_size.y; i++)
@@ -338,6 +347,9 @@ bool Maze::SaveToFile(string fileName)
 	return true;
 }
 
+/// <summary>
+/// generating algorithm selector
+/// </summary>
 void Maze::Generate()
 {
 	//set start point
@@ -347,6 +359,9 @@ void Maze::Generate()
 	this->FindPath();
 }
 
+/// <summary>
+/// DFS algorithm for maze generation
+/// </summary>
 void Maze::GenerateDeepFisrt()
 {
 	SetDataAll(DEFAULT_STORAGE_WALL_CHAR);
@@ -360,7 +375,6 @@ void Maze::GenerateDeepFisrt()
 	this->_InsertExitPoints();
 	return;
 }
-
 
 
 void Maze::_DeepFirstGenerateRecursion(Vector2 pos)
@@ -402,14 +416,9 @@ void Maze::_DeepFirstGenerateRecursion(Vector2 pos)
 		if (digRange <= 0)
 			this->_DeepFirstGenerateRecursion(nextPos);
 
-		/*
-		Vector2 nextPos = pos + direction[i];
-		if (GetDataCrossCount(nextPos, ' ') < 2)
-		{
-			this->_DeepFirstRecursion(nextPos);
-		}*/
 	}
 }
+
 
 bool Maze::_DeepFirstFindRecursion(Vector2 pos)
 {
@@ -449,7 +458,6 @@ bool Maze::_DeepFirstFindRecursion(Vector2 pos)
 
 	//Set Current block to path
 	this->SetData(pos, '-');
-	//m_pathFinder.Push(pos);
 
 	Vector2 nextPos;
 	//progress with direction index
@@ -466,19 +474,24 @@ bool Maze::_DeepFirstFindRecursion(Vector2 pos)
 				return true;
 			}
 		}
-		//this->Print(true);
-		//Sleep(500);
 	}
 
+	//path not found, set back to ' ' char
 	this->SetData(pos, DEFAULT_STORAGE_ROUTE_CHAR);
 	return false;
 }
 
+/// <summary>
+/// set the start point for inner data structure
+/// </summary>
 void Maze::_InsertStartPoint()
 {
 	this->SetData(m_start, DEFAULT_STORAGE_START_CHAR);
 }
 
+/// <summary>
+/// check and set blocks on edges to exits as much as m_requireExitCount
+/// </summary>
 void Maze::_InsertExitPoints()
 {
 	m_exit = new int[(m_size.x + m_size.y) * 2];
@@ -525,11 +538,9 @@ void Maze::_InsertExitPoints()
 	}
 }
 
-void Maze::FindPath()
-{
-	this->FindPathDeepFirst();
-}
-
+/// <summary>
+/// Clear pathfiner solution of the maze for inner data storage
+/// </summary>
 void Maze::ClearPath()
 {
 	for (int i = 0; i < m_size.y; i++)
@@ -542,6 +553,14 @@ void Maze::ClearPath()
 	}
 }
 
+void Maze::FindPath()
+{
+	this->FindPathDeepFirst();
+}
+
+/// <summary>
+/// run DFS pathfind for each exit
+/// </summary>
 void Maze::FindPathDeepFirst()
 {
 	for (int i = 0; i < m_exitCount; i++)
@@ -558,6 +577,10 @@ void Maze::FindPathDeepFirst()
 	}
 }
 
+/// <summary>
+///	Print the Maze char by char with std::cout
+/// </summary>
+/// <param name="showPaths">does the solution shows up</param>
 void Maze::Print(bool showPaths/* =FALSE */)
 {
 	for (int i = 0; i < m_size.y; i++)
@@ -594,7 +617,11 @@ void Maze::Print(bool showPaths/* =FALSE */)
 	}
 }
 
-void Maze::PrintWithClearScreen(bool showPaths)
+/// <summary>
+///	Print the Maze char by char with std::cout and clear the screen first
+/// </summary>
+/// <param name="showPaths">does the solution shows up</param>
+void Maze::PrintWithClearScreen(bool showPaths/* =FALSE */)
 {
 	system("cls");
 	this->Print(showPaths);
