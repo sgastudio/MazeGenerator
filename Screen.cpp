@@ -56,7 +56,7 @@ void Screen::PrintMainMenu()
 	screenText += "\t|         6. Exit                             |\n";
 	screenText += "\t|                                             |\n";
 	screenText += "\t+---------------------------------------------+\n";
-	screenText += "\tPlease input number to select functions\n\t";
+	screenText += "\tPlease input number to select function you need:\n\t";
 	cout << screenText;
 }
 
