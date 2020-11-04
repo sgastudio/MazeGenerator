@@ -230,6 +230,21 @@ bool Maze::LoadFromFile(string fileName)
 
 	//calc maze size
 	string testString;
+	int widthCheck = -1;
+	/*
+	while (!inputFile.eof())
+	{
+		getline(inputFile, testString);
+		if (widthCheck != testString.length())
+		{
+			if (widthCheck > 0 && testString.length()!=0)
+				return false;
+			else
+				widthCheck = testString.length();
+		}
+	}*/
+
+	inputFile.seekg(0, ios::beg);
 	getline(inputFile, testString);
 	m_size.x = testString.length();
 	int index = 0;
@@ -249,7 +264,7 @@ bool Maze::LoadFromFile(string fileName)
 		{
 			if (testString[j] == DEFAULT_DISPLAY_START_CHAR)
 			{
-				this->m_start = Vector2(i, j);
+				this->m_start = Vector2(j, i);
 			}
 			if (testString[j] == DEFAULT_DISPLAY_EXIT_CHAR)
 			{
@@ -309,7 +324,7 @@ bool Maze::SaveToFile(string fileName)
 				outputFile << DEFAULT_DISPLAY_ROUTE_CHAR;
 				break;
 			default:
-				cout << '?';
+				outputFile << '?';
 				break;
 			}
 		}
@@ -409,6 +424,13 @@ bool Maze::_DeepFirstFindRecursion(Vector2 pos)
 		SetData(pos, DEFAULT_STORAGE_PATH_CHAR);
 		return true;
 	}
+	/*
+	if (CheckInsideCenterRectangle(pos, m_size/20))
+	{
+		SetData(pos, DEFAULT_STORAGE_PATH_CHAR);
+		return true;
+	}
+	*/
 	if (GetData(pos) == DEFAULT_STORAGE_PATH_CHAR)
 		return true;
 	if (GetDataCrossCount(pos, ' ') < 1)
@@ -548,14 +570,14 @@ void Maze::Print(bool showPaths/* =FALSE */)
 				cout << DEFAULT_DISPLAY_WALL_CHAR;
 				break;
 			case DEFAULT_STORAGE_START_CHAR:
-				cout << "\033[33m" << DEFAULT_DISPLAY_START_CHAR << "\033[0m";
+				cout << "\033[93m" << DEFAULT_DISPLAY_START_CHAR << "\033[0m";
 				break;
 			case DEFAULT_STORAGE_EXIT_CHAR:
 				cout << "\033[32m" << DEFAULT_DISPLAY_EXIT_CHAR << "\033[0m";
 				break;
 			case DEFAULT_STORAGE_PATH_CHAR:
 				if (showPaths==true)
-					cout << "\033[32m" << DEFAULT_DISPLAY_PATH_CHAR << "\033[0m";
+					cout << "\033[92m" << DEFAULT_DISPLAY_PATH_CHAR << "\033[0m";
 				else
 					cout << DEFAULT_DISPLAY_ROUTE_CHAR;
 				break;
