@@ -181,6 +181,7 @@ void Maze::SetData(int index, short inputData)
 
 void Maze::SetDataRectangle(Vector2 center, Vector2 quarterSize, short inputData)
 {
+	quarterSize = quarterSize / 2;
 	for (int i = center.x - quarterSize.x; i <= center.x + quarterSize.x; i++)
 	{
 		for (int j = center.y - quarterSize.y; j <= center.y + quarterSize.y; j++)
@@ -336,7 +337,9 @@ void Maze::GenerateDeepFisrt()
 	//SetDataSurrounding(' ');
 	//SetData(this->m_start, ' ');
 	this->_DeepFirstGenerateRecursion(this->m_start);
-	this->SetDataRectangle(this->m_start, Vector2(1, 1), DEFAULT_STORAGE_ROUTE_CHAR);
+	Vector2 centerAreaSize = Vector2(m_size.x / 10, m_size.y / 10);
+	centerAreaSize.LimitMin(Vector2(3,3));
+	this->SetDataRectangle(this->m_start, centerAreaSize, DEFAULT_STORAGE_ROUTE_CHAR);
 	this->_InsertStartPoint();
 	this->_InsertExitPoints();
 	return;
@@ -394,19 +397,19 @@ void Maze::_DeepFirstGenerateRecursion(Vector2 pos)
 
 bool Maze::_DeepFirstFindRecursion(Vector2 pos)
 {
-	if (GetData(pos) == 'S')
+	if (GetData(pos) == DEFAULT_STORAGE_START_CHAR)
 		return true;
-	if (GetDataCrossCount(pos, 'S') >= 1)
+	if (GetDataCrossCount(pos, DEFAULT_STORAGE_START_CHAR) >= 1)
 	{
-		SetData(pos, 'o');
+		SetData(pos, DEFAULT_STORAGE_PATH_CHAR);
 		return true;
 	}
-	if (GetDataCrossCount(pos, 'o') >= 1)
+	if (GetDataCrossCount(pos, DEFAULT_STORAGE_PATH_CHAR) >= 1)
 	{
-		SetData(pos, 'o');
+		SetData(pos, DEFAULT_STORAGE_PATH_CHAR);
 		return true;
 	}
-	if (GetData(pos) == 'o')
+	if (GetData(pos) == DEFAULT_STORAGE_PATH_CHAR)
 		return true;
 	if (GetDataCrossCount(pos, ' ') < 1)
 		return false;
@@ -436,7 +439,7 @@ bool Maze::_DeepFirstFindRecursion(Vector2 pos)
 		{
 			if (_DeepFirstFindRecursion(nextPos)==true)
 			{
-				this->SetData(pos, 'o');
+				this->SetData(pos, DEFAULT_STORAGE_PATH_CHAR);
 				return true;
 			}
 		}
@@ -444,7 +447,7 @@ bool Maze::_DeepFirstFindRecursion(Vector2 pos)
 		//Sleep(500);
 	}
 
-	this->SetData(pos, ' ');
+	this->SetData(pos, DEFAULT_STORAGE_ROUTE_CHAR);
 	return false;
 }
 
