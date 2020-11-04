@@ -35,6 +35,7 @@ public:
 
 	Vector2 GetPosByIndex(int index);
 	short GetData(Vector2 pos);
+	short GetData(int x, int y);
 	int GetDataCrossCount(Vector2 pos, short data);
 	short* GetDataPointer(Vector2 pos);
 	Vector2 GetSize();
@@ -44,8 +45,9 @@ public:
 	bool CheckOnEdge(Vector2 pos);
 	bool CheckInsideCenterRectangle(Vector2 pos, Vector2 quarterSize);
 	void SetData(Vector2 pos, short inputData);
+	void SetData(int x, int y, short inputData);
 	void SetData(int index, short inputData);
-	void SetDataRectangle(Vector2 center, Vector2 quarterSize,short inputData);
+	void SetDataRectangle(Vector2 center, Vector2 quarterSize, short inputData);
 	void SetDataAll(short inputData);
 	void SetDataSurrounding(short wallData);
 	bool LoadFromFile(string fileName);
@@ -54,7 +56,9 @@ public:
 	void GenerateRandomPrime();
 	void GenerateDeepFisrt();
 	void FindPath();
+	void ClearPath();
 	void FindPathDeepFirst();
 	void FindPathAStar();
-	void Print(bool showPaths=false);
+	void Print(bool showPaths = false);
+	void PrintWithClearScreen(bool showPaths = false);
 };

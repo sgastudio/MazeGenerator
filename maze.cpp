@@ -88,12 +88,17 @@ void Maze::Init(Vector2 m_sizeLimit, int difficulty, int exitCount)
 
 Vector2 Maze::GetPosByIndex(int index)
 {
-	return Vector2(index % (m_size.x), index / (m_size.y));
+	return Vector2(index % (m_size.x), index / m_size.x);
 }
 
 short Maze::GetData(Vector2 pos)
 {
 	return m_data[pos.x + pos.y * m_size.x];
+}
+
+short Maze::GetData(int x, int y)
+{
+	return GetData(Vector2(x,y));
 }
 
 int Maze::GetDataCrossCount(Vector2 pos, short data)
@@ -162,6 +167,11 @@ void Maze::SetData(Vector2 pos, short inputData)
 	if (pos.x<0 || pos.x>m_size.x - 1 || pos.y<0 || pos.y>m_size.y - 1)
 		return;
 	m_data[pos.x + pos.y * m_size.x] = inputData;
+}
+
+void Maze::SetData(int x, int y, short inputData)
+{
+	SetData(Vector2(x,y),inputData);
 }
 
 void Maze::SetData(int index, short inputData)
@@ -246,7 +256,7 @@ bool Maze::LoadFromFile(string fileName)
 				//Vector2List.Push();
 				//m_exit->Push(Vector2(i, j));
 				//for(int count=0;count<m_exitCount;count++)
-				m_exit[m_exitCount] = i + j * m_size.x;
+				m_exit[m_exitCount] = i * m_size.x + j ;
 				m_exitCount++;
 			}
 			m_data[i * m_size.x + j] = testString[j];
@@ -255,6 +265,9 @@ bool Maze::LoadFromFile(string fileName)
 
 	//close file
 	inputFile.close();
+
+	this->FindPath();
+
 	return true;
 }
 
@@ -427,8 +440,8 @@ bool Maze::_DeepFirstFindRecursion(Vector2 pos)
 				return true;
 			}
 		}
-		this->Print(true);
-		Sleep(500);
+		//this->Print(true);
+		//Sleep(500);
 	}
 
 	this->SetData(pos, ' ');
@@ -478,8 +491,9 @@ void Maze::_InsertExitPoints()
 		m_exit[i] = m_exit[randIndex];
 		m_exit[randIndex] = tempInt;
 	}
-	m_exitCount = m_requireExitCount;
-	for (int i = 0; i < m_requireExitCount; i++)
+	if(m_requireExitCount < m_exitCount)
+		m_exitCount = m_requireExitCount;
+	for (int i = 0; i < m_exitCount; i++)
 	{
 		SetData(m_exit[i], DEFAULT_STORAGE_EXIT_CHAR);
 	}
@@ -488,6 +502,18 @@ void Maze::_InsertExitPoints()
 void Maze::FindPath()
 {
 	this->FindPathDeepFirst();
+}
+
+void Maze::ClearPath()
+{
+	for (int i = 0; i < m_size.y; i++)
+	{
+		for (int j = 0; j < m_size.x; j++)
+		{
+			if (this->GetData(i, j) == DEFAULT_STORAGE_PATH_CHAR)
+				this->SetData(i, j, DEFAULT_STORAGE_ROUTE_CHAR);
+		}
+	}
 }
 
 void Maze::FindPathDeepFirst()
@@ -540,4 +566,10 @@ void Maze::Print(bool showPaths/* =FALSE */)
 		}
 		cout << endl;
 	}
+}
+
+void Maze::PrintWithClearScreen(bool showPaths)
+{
+	system("cls");
+	this->Print(showPaths);
 }
