@@ -231,19 +231,20 @@ bool Maze::LoadFromFile(string fileName)
 	//calc maze size
 	string testString;
 	int widthCheck = -1;
-	/*
+	int i=0;
 	while (!inputFile.eof())
 	{
 		getline(inputFile, testString);
-		if (widthCheck != testString.length())
+		if (widthCheck != testString.length() && !testString.empty())
 		{
-			if (widthCheck > 0 && testString.length()!=0)
+			if (widthCheck > 0)
 				return false;
 			else
 				widthCheck = testString.length();
 		}
-	}*/
+	}
 
+	inputFile.clear();
 	inputFile.seekg(0, ios::beg);
 	getline(inputFile, testString);
 	m_size.x = testString.length();
