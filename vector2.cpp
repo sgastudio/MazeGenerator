@@ -30,6 +30,15 @@ Vector2::Vector2(int valX, int valY)
 	y = valY;
 }
 
+int Vector2::Get1DIndex(int width)
+{
+	return width * y + x;
+}
+Vector2 Vector2::Get2DPos(int width, int index)
+{
+	return Vector2(index%width,index/width);
+}
+
 void Vector2::Set(int valX, int valY)
 {
 	x = valX; y = valY;

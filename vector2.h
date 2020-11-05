@@ -10,6 +10,8 @@ public:
 	Vector2(int valX, int valY);
 	int x;
 	int y;
+	int Get1DIndex(int width);
+	Vector2 Get2DPos(int width, int index);
 	void Set(int valX, int valY);
 	void LimitMin(Vector2 limit);
 	void LimitMax(Vector2 limit);
