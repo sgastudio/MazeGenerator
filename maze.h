@@ -1,5 +1,6 @@
 #pragma once
 #include "stack.h"
+#include "list.h"
 #include "vector2.h"
 
 #include <string>
@@ -25,6 +26,9 @@ protected:
 
 	void _DeepFirstGenerateRecursion(Vector2 pos);
 	bool _DeepFirstFindRecursion(Vector2 pos);
+
+	void _AStarFindProcess();
+
 	void _InsertStartPoint();
 	void _InsertExitPoints();
 public:
@@ -63,6 +67,39 @@ public:
 	void ClearPath();
 	void FindPathDeepFirst();
 	void FindPathAStar();
+
 	void Print(bool showPaths = false);
 	void PrintWithClearScreen(bool showPaths = false);
+};
+
+class AStarValue : Vector2 {
+public:
+	AStarValue() : Vector2() {
+
+	}
+	AStarValue(int x) : Vector2(x) {
+
+	}
+	AStarValue(int x, int y) : Vector2(x, y) {
+
+	}
+};
+
+struct AStarNode {
+public:
+	int parentIndex = 0;
+	AStarValue checkValue = 0;
+};
+
+class AStarFinder {
+	AStarNode** m_openTable;
+	AStarNode** m_closeTable;
+	AStarNode m_currentNode;
+public:
+	AStarFinder(Vector2);
+	AStarFinder(int, int);
+	~AStarFinder();
+	bool Find(Vector2 st);
+	int* path;
+	int steps;
 };

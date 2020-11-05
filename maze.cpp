@@ -7,13 +7,14 @@ const char DEFAULT_STORAGE_PATH_CHAR = 'o';
 const char DEFAULT_STORAGE_START_CHAR = 'S';
 const char DEFAULT_STORAGE_EXIT_CHAR = 'E';
 const char DEFAULT_STORAGE_ROUTE_CHAR = ' ';
+const char DEFAULT_STORAGE_PLAYER_CHAR = 'P';
 
 const char DEFAULT_DISPLAY_WALL_CHAR = 'X';
 const char DEFAULT_DISPLAY_PATH_CHAR = 'o';
 const char DEFAULT_DISPLAY_START_CHAR = 'S';
 const char DEFAULT_DISPLAY_EXIT_CHAR = 'E';
 const char DEFAULT_DISPLAY_ROUTE_CHAR = ' ';
-
+const char DEFAULT_DISPLAY_PLAYER_CHAR = 'P';
 Maze::Maze()
 {
 	m_size = Vector2();
@@ -447,7 +448,18 @@ bool Maze::_DeepFirstFindRecursion(Vector2 pos)
 		return false;
 
 	//Randomrize direction index
-	Vector2 direction[4] = { {0,1},{0,-1},{1,0},{-1,0} };
+	//up down left right
+	Vector2 distance = m_start - pos;
+	Vector2 direction[5] = { {0,-1},{0,1},{-1,0},{1,0}, {0, 0}};
+	if (max(abs(distance.x) , abs(distance.y))<=min(m_size.x/10,m_size.y/10))
+	{
+		if (abs(distance.x) > abs(distance.y))
+			direction[4] = { distance.x / abs(distance.x),0 };
+		else
+			direction[4] = { 0, distance.y / abs(distance.y) };
+	}
+	
+
 	for (int i = 0; i < 4; i++)
 	{
 		int randDirection = rand() % 4;
@@ -461,12 +473,12 @@ bool Maze::_DeepFirstFindRecursion(Vector2 pos)
 
 	Vector2 nextPos;
 	//progress with direction index
-	for (int i = 0; i < 4; i++)
+	for (int i = 4; i >= 0; i--)
 	{
 		nextPos = pos + direction[i];
 		short nextPosData = GetData(nextPos);
 
-		if (nextPosData==DEFAULT_STORAGE_ROUTE_CHAR)
+		if (nextPosData==DEFAULT_STORAGE_ROUTE_CHAR && direction[i] != 0)
 		{
 			if (_DeepFirstFindRecursion(nextPos)==true)
 			{
@@ -575,6 +587,27 @@ void Maze::FindPathDeepFirst()
 		if (exitPos.y == m_size.y - 1)
 			_DeepFirstFindRecursion(Vector2(exitPos.x, m_size.y - 2));
 	}
+}
+
+void Maze::FindPathAStar()
+{
+	for (int i = 0; i < m_exitCount; i++)
+	{
+		Vector2 exitPos = GetPosByIndex(m_exit[i]);
+		if (exitPos.x == 0)
+			_DeepFirstFindRecursion(Vector2(1, exitPos.y));
+		if (exitPos.x == m_size.x - 1)
+			_DeepFirstFindRecursion(Vector2(m_size.x - 2, exitPos.y));
+		if (exitPos.y == 0)
+			_DeepFirstFindRecursion(Vector2(exitPos.x, 1));
+		if (exitPos.y == m_size.y - 1)
+			_DeepFirstFindRecursion(Vector2(exitPos.x, m_size.y - 2));
+	}
+}
+
+void Maze::_AStarFindProcess()
+{
+
 }
 
 /// <summary>
