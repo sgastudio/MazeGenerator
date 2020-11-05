@@ -18,6 +18,12 @@ Vector2::Vector2()
 	y = 0;
 }
 
+Vector2::Vector2(int val)
+{
+	x = val;
+	y = val;
+}
+
 Vector2::Vector2(int valX, int valY)
 {
 	x = valX;
@@ -99,6 +105,11 @@ Vector2 Vector2::operator/(int val)
 	if (val == 0)
 		return Vector2(x, y);
 	return Vector2(x / val, y / val);
+}
+
+Vector2 Vector2::operator=(int val)
+{
+	return Vector2(val,val);
 }
 
 bool Vector2::operator==(Vector2 vec)

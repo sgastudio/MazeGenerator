@@ -6,6 +6,7 @@ using namespace std;
 typedef class Vector2 {
 public:
 	Vector2();
+	Vector2(int val);
 	Vector2(int valX, int valY);
 	int x;
 	int y;
@@ -21,6 +22,7 @@ public:
 	Vector2 operator-= (Vector2 vec) ;
 	Vector2 operator* (int val) ;
 	Vector2 operator/(int val);
+	Vector2 operator=(int val);
 	bool operator== (Vector2 vec);
 	bool operator!=(Vector2 vec);
 	friend ostream& operator<<(ostream& out, Vector2 vec);
