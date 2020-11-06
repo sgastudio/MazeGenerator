@@ -617,7 +617,6 @@ void Maze::FindPathDeepFirst()
 
 void Maze::FindPathAStar()
 {
-	vector<Pos2D> pathStack;
 	for (int i = 0; i < m_exitCount; i++)
 	{
 		Vector2 exitPos = GetPosByIndex(m_exit[i]);
@@ -638,7 +637,6 @@ bool Maze::_AStarFindProcess(Vector2 startPos, Vector2 endPos)
 	AStarFinder AFinder(m_size);
 	Pos2D currentPos;
 	Pos2D nextPos;
-	vector<Pos2D> path;
 	Vector2 direction[4] = { {0,-1},{0,1},{-1,0},{1,0} };
 
 	//Start Finder
@@ -687,17 +685,8 @@ bool Maze::_AStarFindProcess(Vector2 startPos, Vector2 endPos)
 	do {
 		currentPos = AFinder.GetData(currentPos).parent;
 		m_data[currentPos.Get1DIndex(m_size.x)] = 'Z';
-		path.push_back(currentPos);
 		m_pathPoints.push_back(currentPos);
-		
 	} while (AFinder.GetData(currentPos).parent != currentPos);
-/*
-	while (path.size()>0)
-	{
-		m_data[path.back().Get1DIndex(m_size.x)] = 'o';
-		path.pop_back();
-	}
-	*/
 	return true;
 }
 
