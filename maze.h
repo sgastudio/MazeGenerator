@@ -41,7 +41,6 @@ public:
 	void Init(Vector2 sizeLimit);
 	void Init(Vector2 m_sizeLimit, int difficulty, int exitCount = 1);
 
-	Vector2 GetPosByIndex(int index);
 	short GetData(Vector2 pos);
 	short GetData(int x, int y);
 	int GetDataCrossCount(Vector2 pos, short data);

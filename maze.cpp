@@ -88,11 +88,6 @@ void Maze::Init(Vector2 m_sizeLimit, int difficulty, int exitCount)
 	Init();
 }
 
-Vector2 Maze::GetPosByIndex(int index)
-{
-	return Vector2(index % (m_size.x), index / m_size.x);
-}
-
 short Maze::GetData(Vector2 pos)
 {
 	return m_data[pos.x + pos.y * m_size.x];
@@ -265,7 +260,7 @@ bool Maze::LoadFromFile(string fileName)
 	m_size.y = (int)((int)inputFile.tellg() / (m_size.x + 1) + 0.5);
 	inputFile.seekg(0, ios::beg);
 
-	//allocate data sapce
+	//allocate data space
 	this->Init();
 	m_exit = new int[(m_size.x + m_size.y) * 2];
 
@@ -378,7 +373,10 @@ void Maze::GenerateDeepFisrt()
 	return;
 }
 
-
+/// <summary>
+/// Recursion style for DFS algorithm maze generation
+/// </summary>
+/// <param name="pos">position for check</param>
 void Maze::_DeepFirstGenerateRecursion(Vector2 pos)
 {
 	if (CheckOnEdge(pos))
@@ -565,10 +563,14 @@ void Maze::ClearPath()
 	}
 }
 
-void Maze::FindPath(int methodIndex)
+/// <summary>
+/// path finding algorithm selector
+/// </summary>
+/// <param name="methodIndex">algorithm selector</param>
+void Maze::FindPath(int algorithmIndex)
 {
 	ClearPath();
-	switch (methodIndex)
+	switch (algorithmIndex)
 	{
 	case 1:
 		this->FindPathDeepFirst();
@@ -579,7 +581,7 @@ void Maze::FindPath(int methodIndex)
 	break;
 	}
 
-	//Display Path Char 'o'
+	//Display found path with char 'o'
 	while (m_pathPoints.size() > 0)
 	{
 		m_data[m_pathPoints.back().Get1DIndex(m_size.x)] = 'o';
@@ -588,13 +590,13 @@ void Maze::FindPath(int methodIndex)
 }
 
 /// <summary>
-/// run DFS pathfind for each exit
+/// run DFS pathfinding for each exit
 /// </summary>
 void Maze::FindPathDeepFirst()
 {
 	for (int i = 0; i < m_exitCount; i++)
 	{
-		Vector2 exitPos = GetPosByIndex(m_exit[i]);
+		Vector2 exitPos = Vector2::Get2DPos(m_size.x, m_exit[i]);
 		if (exitPos.x == 0)
 			_DeepFirstFindRecursion(Vector2(1, exitPos.y));
 		if (exitPos.x == m_size.x - 1)
@@ -615,11 +617,14 @@ void Maze::FindPathDeepFirst()
 	}
 }
 
+/// <summary>
+/// run A* pathfinding for each exit
+/// </summary>
 void Maze::FindPathAStar()
 {
 	for (int i = 0; i < m_exitCount; i++)
 	{
-		Vector2 exitPos = GetPosByIndex(m_exit[i]);
+		Vector2 exitPos = Vector2::Get2DPos(m_size.x,m_exit[i]);
 		if (exitPos.x == 0)
 			_AStarFindProcess(Vector2(1, exitPos.y),m_start);
 		if (exitPos.x == m_size.x - 1)
@@ -630,6 +635,7 @@ void Maze::FindPathAStar()
 			_AStarFindProcess(Vector2(exitPos.x, m_size.y - 2), m_start);
 	}
 }
+
 
 bool Maze::_AStarFindProcess(Vector2 startPos, Vector2 endPos)
 {
@@ -679,9 +685,12 @@ bool Maze::_AStarFindProcess(Vector2 startPos, Vector2 endPos)
 			}
 		}
 	}
-
+	
+	//returen false if there is no path
 	if (AFinder.OpenTableEmpty())
 		return false;
+
+	//store path to m_pathPoints for display
 	do {
 		currentPos = AFinder.GetData(currentPos).parent;
 		m_data[currentPos.Get1DIndex(m_size.x)] = 'Z';
