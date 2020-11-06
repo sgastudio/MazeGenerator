@@ -1,8 +1,6 @@
 #pragma once
-#include "stack.h"
-#include "list.h"
 #include "vector2.h"
-
+#include <vector>
 #include <string>
 #include <iostream>
 #include <fstream>
