@@ -15,6 +15,7 @@ const char DEFAULT_DISPLAY_START_CHAR = 'S';
 const char DEFAULT_DISPLAY_EXIT_CHAR = 'E';
 const char DEFAULT_DISPLAY_ROUTE_CHAR = ' ';
 const char DEFAULT_DISPLAY_PLAYER_CHAR = 'P';
+const char DEFAULT_DISPLAY_FINISH_CHAR = 'F';
 Maze::Maze()
 {
 	m_size = Vector2();
@@ -71,8 +72,8 @@ void Maze::Init()
 	{
 		delete[] m_data;
 	}
-
 	m_data = new short[(m_size.x) * (m_size.y)];
+	m_pathPoints.clear();
 }
 void Maze::Init(Vector2 m_sizeLimit)
 {
@@ -290,7 +291,7 @@ bool Maze::LoadFromFile(string fileName)
 	//close file
 	inputFile.close();
 
-	this->FindPath();
+	//this->FindPath();
 
 	return true;
 }
@@ -357,7 +358,7 @@ void Maze::Generate()
 	m_start = (m_size - 1) / 2;
 	srand((unsigned)time(NULL));
 	this->GenerateDeepFisrt();
-	this->FindPath();
+	//this->FindPath();
 }
 
 /// <summary>
@@ -451,7 +452,7 @@ bool Maze::_DeepFirstFindRecursion(Vector2 pos)
 	//up down left right
 	Vector2 distance = m_start - pos;
 	Vector2 direction[5] = { {0,-1},{0,1},{-1,0},{1,0}, {0, 0}};
-	if (max(abs(distance.x) , abs(distance.y))<=min(m_size.x/10,m_size.y/10))
+	if (max(abs(distance.x) , abs(distance.y))<=min(m_size.x/5,m_size.y/5))
 	{
 		if (abs(distance.x) > abs(distance.y))
 			direction[4] = { distance.x / abs(distance.x),0 };
@@ -482,6 +483,7 @@ bool Maze::_DeepFirstFindRecursion(Vector2 pos)
 		{
 			if (_DeepFirstFindRecursion(nextPos)==true)
 			{
+				this->SetData(pos, DEFAULT_STORAGE_ROUTE_CHAR);
 				this->SetData(pos, DEFAULT_STORAGE_PATH_CHAR);
 				return true;
 			}
@@ -555,19 +557,34 @@ void Maze::_InsertExitPoints()
 /// </summary>
 void Maze::ClearPath()
 {
-	for (int i = 0; i < m_size.y; i++)
+	m_pathPoints.clear();
+	for (int i = 0; i < m_size.x * m_size.y; i++)
 	{
-		for (int j = 0; j < m_size.x; j++)
-		{
-			if (this->GetData(i, j) == DEFAULT_STORAGE_PATH_CHAR)
-				this->SetData(i, j, DEFAULT_STORAGE_ROUTE_CHAR);
-		}
+		if (m_data[i] == DEFAULT_STORAGE_PATH_CHAR)
+			m_data[i] = DEFAULT_STORAGE_ROUTE_CHAR;
 	}
 }
 
-void Maze::FindPath()
+void Maze::FindPath(int methodIndex)
 {
-	this->FindPathDeepFirst();
+	ClearPath();
+	switch (methodIndex)
+	{
+	case 1:
+		this->FindPathDeepFirst();
+		break;
+	case 0:
+	default:
+		this->FindPathAStar();
+	break;
+	}
+
+	//Display Path Char 'o'
+	while (m_pathPoints.size() > 0)
+	{
+		m_data[m_pathPoints.back().Get1DIndex(m_size.x)] = 'o';
+		m_pathPoints.pop_back();
+	}
 }
 
 /// <summary>
@@ -587,27 +604,101 @@ void Maze::FindPathDeepFirst()
 		if (exitPos.y == m_size.y - 1)
 			_DeepFirstFindRecursion(Vector2(exitPos.x, m_size.y - 2));
 	}
+
+	for (int i = 0; i < m_size.x * m_size.y; i++)
+	{
+		if (m_data[i] == 'o')
+		{
+			m_pathPoints.push_back(Vector2::Get2DPos(m_size.x, i));
+			m_data[i] = ' ';
+		}
+	}
 }
 
 void Maze::FindPathAStar()
 {
+	vector<Pos2D> pathStack;
 	for (int i = 0; i < m_exitCount; i++)
 	{
 		Vector2 exitPos = GetPosByIndex(m_exit[i]);
 		if (exitPos.x == 0)
-			_DeepFirstFindRecursion(Vector2(1, exitPos.y));
+			_AStarFindProcess(Vector2(1, exitPos.y),m_start);
 		if (exitPos.x == m_size.x - 1)
-			_DeepFirstFindRecursion(Vector2(m_size.x - 2, exitPos.y));
+			_AStarFindProcess(Vector2(m_size.x - 2, exitPos.y), m_start);
 		if (exitPos.y == 0)
-			_DeepFirstFindRecursion(Vector2(exitPos.x, 1));
+			_AStarFindProcess(Vector2(exitPos.x, 1), m_start);
 		if (exitPos.y == m_size.y - 1)
-			_DeepFirstFindRecursion(Vector2(exitPos.x, m_size.y - 2));
+			_AStarFindProcess(Vector2(exitPos.x, m_size.y - 2), m_start);
 	}
 }
 
-void Maze::_AStarFindProcess()
+bool Maze::_AStarFindProcess(Vector2 startPos, Vector2 endPos)
 {
+	//allocate workspace
+	AStarFinder AFinder(m_size);
+	Pos2D currentPos;
+	Pos2D nextPos;
+	vector<Pos2D> path;
+	Vector2 direction[4] = { {0,-1},{0,1},{-1,0},{1,0} };
 
+	//Start Finder
+	AFinder.StartFind(startPos, endPos);
+	
+	while (!AFinder.OpenTableEmpty())
+	{
+		currentPos = AFinder.GetMinIndex();
+
+		//Check if CurrentPos is the point we need
+		if (currentPos == endPos)
+		{
+			AFinder.AddToCloseTable(currentPos.Get1DIndex(m_size.x));
+			break;
+		}
+
+		for (int i = 0; i < 4; i++)
+		{
+			nextPos = currentPos + direction[i];
+			short nextPosData = m_data[nextPos.Get1DIndex(m_size.x)];
+
+			//block reachable and not in closeTable
+			if ((nextPosData == ' ' || nextPosData == 'S') && !AFinder.CheckInCloseTable(nextPos))
+			{
+
+				//block not in openTable
+				if (!AFinder.CheckInOpenTable(nextPos))
+				{
+					AFinder.AddToOpenTalbe(nextPos.Get1DIndex(m_size.x));
+					AFinder.SetParent(nextPos.Get1DIndex(m_size.x),currentPos);
+					AFinder.SetValueG(nextPos.Get1DIndex(m_size.x),AFinder.GetData(currentPos).GetValueG() + 1);
+					AFinder.SetValueH(nextPos.Get1DIndex(m_size.x),nextPos.Distance(endPos));
+				}
+				//block alreay in openTable if the G Value will be better, then change Parent;
+				else if(AFinder.CheckInOpenTable(nextPos) && AFinder.GetData(nextPos).GetValueG() > AFinder.GetData(currentPos).GetValueG() + 1)
+				{
+					AFinder.SetParent(nextPos.Get1DIndex(m_size.x), currentPos);
+					AFinder.SetValueG(nextPos.Get1DIndex(m_size.x), AFinder.GetData(currentPos).GetValueG() + 1);
+				}
+			}
+		}
+	}
+
+	if (AFinder.OpenTableEmpty())
+		return false;
+	do {
+		currentPos = AFinder.GetData(currentPos).parent;
+		m_data[currentPos.Get1DIndex(m_size.x)] = 'Z';
+		path.push_back(currentPos);
+		m_pathPoints.push_back(currentPos);
+		
+	} while (AFinder.GetData(currentPos).parent != currentPos);
+/*
+	while (path.size()>0)
+	{
+		m_data[path.back().Get1DIndex(m_size.x)] = 'o';
+		path.pop_back();
+	}
+	*/
+	return true;
 }
 
 /// <summary>
@@ -640,6 +731,9 @@ void Maze::Print(bool showPaths/* =FALSE */)
 				break;
 			case DEFAULT_STORAGE_ROUTE_CHAR:
 				cout << DEFAULT_DISPLAY_ROUTE_CHAR;
+				break;
+			case DEFAULT_STORAGE_PLAYER_CHAR:
+				cout << "\033[36m" << DEFAULT_DISPLAY_PLAYER_CHAR << "\033[0m";
 				break;
 			default:
 				cout << "\033[31m" << 'U' << "\033[0m";
