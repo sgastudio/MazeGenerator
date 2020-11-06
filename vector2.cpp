@@ -30,6 +30,16 @@ Vector2::Vector2(int valX, int valY)
 	y = valY;
 }
 
+int Vector2::Distance(Vector2 end)
+{
+	return this->Distance(*this, end);
+}
+
+int Vector2::Distance(Vector2 start, Vector2 end)
+{
+	return abs((end - start).x) + abs((end - start).y);
+}
+
 int Vector2::Get1DIndex(int width)
 {
 	return width * y + x;
@@ -129,55 +139,4 @@ bool Vector2::operator==(Vector2 vec)
 bool Vector2::operator!=(Vector2 vec)
 {
 	return x != vec.x || y != vec.y;
-}
-
-Vector2List::Vector2List()
-{
-	data = Vector2();
-	next = NULL;
-}
-
-Vector2List::Vector2List(Vector2 vec)
-{
-	data = vec;
-	next = NULL;
-}
-
-Vector2List::~Vector2List()
-{
-	if (next != NULL)
-		delete next;
-}
-
-void Vector2List::Push(Vector2 vec)
-{
-	Vector2List* p = this->next;
-	while (p->next!=NULL)
-	{
-		p = p->next;
-	}
-	p->next = new Vector2List(vec);
-}
-
-void Vector2List::Push(int x, int y)
-{
-	Push(Vector2(x, y));
-}
-
-void Vector2List::Remove(int index)
-{
-
-}
-
-void Vector2List::Remove()
-{
-	Vector2List* p = this->next;
-	if (p == NULL)
-		return;
-	
-	while (p->next != NULL)
-	{
-		p = p->next;
-	}
-	delete p;
 }
