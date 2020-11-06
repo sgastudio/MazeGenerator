@@ -24,6 +24,7 @@ int main(void)
 	int exitCount;
 	int density;
 	int densityMax;
+	bool needOfPathfinding = false;
 	Vector2 mazeSize;
 
 	screenAgent.SetWndTitle(TEXT("Maze Generator"));
@@ -89,9 +90,13 @@ int main(void)
 				screenAgent.SetMsg("\033[31mPlease generate/load the maze before preview it!\033[0m");
 				break;
 			}
+			screenAgent.PrintLogo();
+			needOfPathfinding = screenAgent.InputBool("Do you want to see the path to exit? \n\t(0 = No, 1 = Yes)");
+			if(needOfPathfinding)
+				mazeAgent.FindPath(screenAgent.InputInt("Which Kind of pathfinding method do you want? \n\t(0 = A* Algorithm, 1 = DFS Algorithm)"));
 			screenAgent.SetBufSize(mazeAgent.GetSize() + 1);
 			screenAgent.SetWndSize(mazeAgent.GetSize() + 1);
-			mazeAgent.PrintWithClearScreen(screenAgent.InputBool("Do you want to see the path to exit? \n\t(0 = No, 1 = Yes)"));
+			mazeAgent.Print(needOfPathfinding);
 			screenAgent.Pause();
 			break;
 		case MENU_SELECTIONS_E::Credit:
