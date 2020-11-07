@@ -38,5 +38,14 @@
     <ClInclude Include="Screen.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="player.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="ASNode.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="AStarFinder.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

@@ -25,7 +25,10 @@
     <ClCompile Include="vector2.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ASNode.h" />
+    <ClInclude Include="AStarFinder.h" />
     <ClInclude Include="maze.h" />
+    <ClInclude Include="player.h" />
     <ClInclude Include="Screen.h" />
     <ClInclude Include="vector2.h" />
   </ItemGroup>
