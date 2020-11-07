@@ -51,9 +51,11 @@ void Screen::PrintMainMenu()
 	screenText += "\t|                                             |\n";
 	screenText += "\t|         4. Preview                          |\n";
 	screenText += "\t|                                             |\n";
-	screenText += "\t|         5. Credits                          |\n";
+	screenText += "\t|         5. Play Back                        |\n";
 	screenText += "\t|                                             |\n";
-	screenText += "\t|         6. Exit                             |\n";
+	screenText += "\t|         6. Credits                          |\n";
+	screenText += "\t|                                             |\n";
+	screenText += "\t|         7. Exit                             |\n";
 	screenText += "\t|                                             |\n";
 	screenText += "\t+---------------------------------------------+\n";
 	screenText += "\tPlease input number to select function you need:\n\t";
@@ -77,8 +79,13 @@ void Screen::PrintCredits()
 
 void Screen::Pause()
 {
-	cout << "\t";
 	system("pause");
+}
+
+char Screen::PauseEX(string displayText)
+{
+	cout << displayText;
+	return _getch();
 }
 
 void Screen::Clear()
@@ -110,6 +117,21 @@ void Screen::SetFont()
 void Screen::SetMsg(string text)
 {
 	m_msg = text;
+}
+
+void Screen::SetMsgError(string text)
+{
+	this->SetMsg("\033[91m"+text+"\033[0m");
+}
+
+void Screen::SetMsgWarn(string text)
+{
+	this->SetMsg("\033[93m" + text + "\033[0m");
+}
+
+void Screen::SetMsgGood(string text)
+{
+	this->SetMsg("\033[92m" + text + "\033[0m");
 }
 
 void Screen::SetWndTitle(LPCWSTR text)
