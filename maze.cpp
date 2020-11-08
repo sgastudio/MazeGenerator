@@ -43,10 +43,11 @@ Maze::~Maze()
 		delete[] m_data;
 	//if (m_exit != NULL)
 	//	delete[] m_exit;
-	if (m_players != NULL)
-		delete[] m_players;
-	if (m_pathPoints.size() > 0)
-		m_pathPoints.clear();
+	//if (m_players != NULL)
+	//	delete[] m_players;
+	m_exit.clear();
+	m_players.clear();
+	m_pathPoints.clear();
 }
 
 void Maze::Init()
@@ -59,9 +60,10 @@ void Maze::Init()
 	//	delete[] m_exit;
 	//m_exit = NULL;
 	m_exit.clear();
-	if (m_players != NULL)
-		delete[] m_players;
-	m_players = NULL;
+	//if (m_players != NULL)
+	//	delete[] m_players;
+	//m_players = NULL;
+	InitPlayers();
 	m_size = Vector2();
 	m_start = Vector2();
 	//m_exitCount = 0;
@@ -77,12 +79,13 @@ void Maze::Init(Vector2 sizeLimit)
 		delete[] m_data;
 	m_data = new short[(m_size.x) * (m_size.y)];
 	m_start = Vector2();
-	
+	InitPlayers();
 	//if (m_exit != NULL)
 	//	delete[] m_exit;
 	//m_exit = new int[(m_size.x + m_size.y) * 2];
 	m_exit.clear();
 	m_pathPoints.clear();
+	m_requireExitCount = 0;
 	//m_exitCount = 0;
 }
 
@@ -98,6 +101,7 @@ void Maze::Init(Vector2 sizeLimit, int difficulty, int exitCount)
 	//if (m_exit != NULL)
 	//	delete[] m_exit;
 	//m_exit = NULL;
+	InitPlayers();
 	m_exit.clear();
 	m_pathPoints.clear();
 	//m_exitCount = 0;
@@ -105,9 +109,21 @@ void Maze::Init(Vector2 sizeLimit, int difficulty, int exitCount)
 
 void Maze::InitPlayers()
 {
+	m_players.clear();
+	/*
 	if (m_players != NULL)
 		delete[] m_players;
-	m_players = new Player[m_exit.size()];
+	m_players = new Player[m_exit.size()];*/
+}
+
+int Maze::LimitDifficult(int val)
+{
+	if (val < 1)
+		return 1;
+	else if (val > min(m_size.x, m_size.y))
+		return min(m_size.x, m_size.y);
+	else
+		return val;
 }
 
 short Maze::GetData(Vector2 pos)
@@ -162,8 +178,8 @@ Vector2 Maze::GetSize()
 Maze::MAZE_SOLVABLE_E Maze::GetSolvable()
 {
 
-	int deadCount=0;
-	for(int i=0;i<m_exit.size();i++)
+	unsigned deadCount=0;
+	for(unsigned i=0;i<m_exit.size();i++)
 	{
 		if (m_players[i].path.size() == 0)
 			deadCount++;
@@ -173,8 +189,7 @@ Maze::MAZE_SOLVABLE_E Maze::GetSolvable()
 		return MAZE_SOLVABLE_E::Fully;
 	if(deadCount>0 && deadCount< m_exit.size())
 		return MAZE_SOLVABLE_E::Partially;
-	if (deadCount == m_exit.size())
-		return MAZE_SOLVABLE_E::Not;
+	return MAZE_SOLVABLE_E::Not;
 }
 
 int Maze::GetPlayerDataCount()
@@ -190,7 +205,7 @@ int Maze::GetPlayerDataCount()
 
 bool Maze::GetPlayerState()
 {
-	for (int i = 0; i < m_exit.size(); i++)
+	for (unsigned i = 0; i < m_exit.size(); i++)
 	{
 		if (m_players[i].GetLockState() == true)
 		{
@@ -208,7 +223,7 @@ int Maze::GetExitCount()
 int Maze::GetActivePlayerCount()
 {
 	int counter = 0;
-	for (int i = 0; i < m_exit.size(); i++)
+	for (unsigned i = 0; i < m_exit.size(); i++)
 	{
 		if (!m_players[i].GetFinished() && m_players[i].path.size()>0)
 			counter++;
@@ -233,6 +248,13 @@ bool Maze::CheckGenerated()
 		return true;
 	else
 		return false;
+}
+
+bool Maze::CheckPlayerPathFinderMode()
+{
+	if (m_players.size() > 0)
+		return true;
+	return false;
 }
 
 /// <summary>
@@ -352,7 +374,6 @@ bool Maze::LoadFromFile(string fileName)
 	inputFile.seekg(0, ios::beg);
 	getline(inputFile, testString);
 	calculatedSize.x = testString.length();
-	int index = 0;
 	inputFile.seekg(0, ios::end);
 	calculatedSize.y = (int)((int)inputFile.tellg() / (calculatedSize.x + 1) + 0.5);
 	inputFile.seekg(0, ios::beg);
@@ -361,6 +382,7 @@ bool Maze::LoadFromFile(string fileName)
 	this->Init(calculatedSize);
 
 	//load data
+	int emptyCount=0;
 	for (int i = 0; i < m_size.y; i++)
 	{
 		getline(inputFile, testString);
@@ -377,9 +399,18 @@ bool Maze::LoadFromFile(string fileName)
 				m_exit.push_back(i * m_size.x + j);
 				m_requireExitCount++;
 			}
+			if (testString[j] == DEFAULT_DISPLAY_PLAYER_CHAR)
+			{
+				m_players.push_back(Player(Pos2D(j,i)));
+			}
+			if (testString[j] == DEFAULT_DISPLAY_ROUTE_CHAR)
+				emptyCount++;
 			m_data[i * m_size.x + j] = testString[j];
 		}
 	}
+
+	
+	m_difficulty = LimitDifficult((int)(((float)max(m_size.x, m_size.y) / m_size.x / m_size.y) * emptyCount));
 
 	//close file
 	inputFile.close();
@@ -426,7 +457,7 @@ bool Maze::SaveToFile(string fileName)
 				outputFile << DEFAULT_DISPLAY_ROUTE_CHAR;
 				break;
 			case DEFAULT_STORAGE_PLAYER_CHAR:
-				outputFile << DEFAULT_DISPLAY_ROUTE_CHAR;
+				outputFile << DEFAULT_DISPLAY_PLAYER_CHAR;
 				break;
 			default:
 				outputFile << '?';
@@ -539,7 +570,7 @@ bool Maze::_DeepFirstFindRecursion(Vector2 pos)
 	*/
 	if (GetData(pos) == DEFAULT_STORAGE_PATH_CHAR)
 		return true;
-	if (GetDataCrossCount(pos, ' ') < 1)
+	if (GetDataCrossCount(pos, ' ') < 1 )
 		return false;
 
 	//Randomrize direction index
@@ -577,7 +608,7 @@ bool Maze::_DeepFirstFindRecursion(Vector2 pos)
 		{
 			if (_DeepFirstFindRecursion(nextPos) == true)
 			{
-				this->SetData(pos, DEFAULT_STORAGE_ROUTE_CHAR);
+				//this->SetData(pos, DEFAULT_STORAGE_ROUTE_CHAR);
 				this->SetData(pos, DEFAULT_STORAGE_PATH_CHAR);
 				return true;
 			}
@@ -648,7 +679,7 @@ void Maze::_InsertExitPoints()
 	}
 	//if (m_requireExitCount < m_exitCount)
 	//	m_exitCount = m_requireExitCount;*/
-	for (int i = 0; i < m_exit.size(); i++)
+	for (unsigned i = 0; i < m_exit.size(); i++)
 	{
 		SetData(m_exit[i], DEFAULT_STORAGE_EXIT_CHAR);
 	}
@@ -691,6 +722,13 @@ void Maze::FindPath(int algorithmIndex)
 		m_data[m_pathPoints.back().Get1DIndex(m_size.x)] = 'o';
 		m_pathPoints.pop_back();
 	}
+	if (CheckPlayerPathFinderMode())
+	{
+		for (unsigned i = 0; i < m_players.size(); i++)
+		{
+			m_data[m_players[i].GetCurrentMazePos().Get1DIndex(m_size.x)] = 'P';
+		}
+	}
 }
 
 /// <summary>
@@ -698,11 +736,23 @@ void Maze::FindPath(int algorithmIndex)
 /// </summary>
 void Maze::FindPathDeepFirst()
 {
-	for (int i = 0; i < m_exit.size(); i++)
+	if (CheckPlayerPathFinderMode())
 	{
-		Vector2 exitPos = Vector2::Get2DPos(m_size.x, m_exit[i]);
-		_DeepFirstFindRecursion(GetPosNearEdge(exitPos));
+		for (unsigned i = 0; i < m_players.size(); i++)
+		{
+			Vector2 exitPos = m_players[i].GetCurrentMazePos();
+			_DeepFirstFindRecursion(exitPos);
+		}
 	}
+	else
+	{
+		for (unsigned i = 0; i < m_exit.size(); i++)
+		{
+			Vector2 exitPos = Vector2::Get2DPos(m_size.x, m_exit[i]);
+			_DeepFirstFindRecursion(GetPosNearEdge(exitPos));
+		}
+	}
+	
 
 	for (int i = 0; i < m_size.x * m_size.y; i++)
 	{
@@ -720,11 +770,26 @@ void Maze::FindPathDeepFirst()
 void Maze::FindPlayerPathAStar()
 {
 	ClearPath();
-	for (int i = 0; i < m_exit.size(); i++)
+	if (CheckPlayerPathFinderMode())
 	{
-		Vector2 exitPos = Vector2::Get2DPos(m_size.x, m_exit[i]);
-		_PlayerAStarFindProcess(GetPosNearEdge(exitPos), m_start, i);
+		for (unsigned i = 0; i < m_players.size(); i++)
+		{
+			if (m_players[i].GetFinished())
+				continue;
+			Vector2 exitPos = m_players[i].GetCurrentMazePos();
+			_PlayerAStarFindProcess(exitPos, m_start, i);
+		}
 	}
+	else
+	{
+		for (unsigned i = 0; i < m_exit.size(); i++)
+		{
+			Vector2 exitPos = Vector2::Get2DPos(m_size.x, m_exit[i]);
+			m_players.push_back(exitPos);
+			_PlayerAStarFindProcess(GetPosNearEdge(exitPos), m_start, i);
+		}
+	}
+	
 }
 
 /// <summary>
@@ -732,11 +797,24 @@ void Maze::FindPlayerPathAStar()
 /// </summary>
 void Maze::FindPathAStar()
 {
-	for (int i = 0; i < m_exit.size(); i++)
+	if (CheckPlayerPathFinderMode())
 	{
-		Vector2 exitPos = Vector2::Get2DPos(m_size.x, m_exit[i]);
-		_AStarFindProcess(GetPosNearEdge(exitPos), m_start);
+		for (unsigned i = 0; i < m_players.size(); i++)
+		{
+			Vector2 exitPos = m_players[i].GetCurrentMazePos();
+			_AStarFindProcess(exitPos, m_start);
+		}
 	}
+	else
+	{
+		for (unsigned i = 0; i < m_exit.size(); i++)
+		{
+			Vector2 exitPos = Vector2::Get2DPos(m_size.x, m_exit[i]);
+
+			_AStarFindProcess(GetPosNearEdge(exitPos), m_start);
+		}
+	}
+	
 }
 
 bool Maze::_AStarFindProcess(Vector2 startPos, Vector2 endPos)
@@ -767,7 +845,7 @@ bool Maze::_AStarFindProcess(Vector2 startPos, Vector2 endPos)
 			short nextPosData = m_data[nextPos.Get1DIndex(m_size.x)];
 
 			//block reachable and not in closeTable
-			if ((nextPosData == ' ' || nextPosData == 'S') && !AFinder.CheckInCloseTable(nextPos))
+			if ((nextPosData == ' ' || nextPosData == 'S' || nextPosData == 'P' || nextPosData == 'F') && !AFinder.CheckInCloseTable(nextPos))
 			{
 
 				//block not in openTable
@@ -829,7 +907,7 @@ bool Maze::_PlayerAStarFindProcess(Vector2 startPos, Vector2 endPos, int playerI
 			short nextPosData = m_data[nextPos.Get1DIndex(m_size.x)];
 
 			//block reachable and not in closeTable
-			if ((nextPosData == ' ' || nextPosData == 'S') && !AFinder.CheckInCloseTable(nextPos))
+			if ((nextPosData == ' ' || nextPosData == 'S' || nextPosData == 'P') && !AFinder.CheckInCloseTable(nextPos))
 			{
 
 				//block not in openTable
@@ -855,7 +933,6 @@ bool Maze::_PlayerAStarFindProcess(Vector2 startPos, Vector2 endPos, int playerI
 		return false;
 
 	//store path to m_pathPoints for display
-	m_players[playerIndex].SetStartPos(startPos);
 	do {
 		currentPos = AFinder.GetData(currentPos).parent;
 		//m_data[currentPos.Get1DIndex(m_size.x)] = 'Z';
@@ -889,16 +966,16 @@ void Maze::Print(bool showPlayers/* =FALSE */)
 					cout << "\033[93m" << DEFAULT_DISPLAY_START_CHAR << "\033[0m";
 				break;
 			case DEFAULT_STORAGE_EXIT_CHAR:
-				cout << "\033[32m" << DEFAULT_DISPLAY_EXIT_CHAR << "\033[0m";
+				cout << "\033[92m" << DEFAULT_DISPLAY_EXIT_CHAR << "\033[0m";
 				break;
 			case DEFAULT_STORAGE_PATH_CHAR:
-				cout << "\033[92m" << DEFAULT_DISPLAY_PATH_CHAR << "\033[0m";
+				cout << "\033[32m" << DEFAULT_DISPLAY_PATH_CHAR << "\033[0m";
 				break;
 			case DEFAULT_STORAGE_ROUTE_CHAR:
 				cout << DEFAULT_DISPLAY_ROUTE_CHAR;
 				break;
 			case DEFAULT_STORAGE_PLAYER_CHAR:
-				cout << "\033[36m" << DEFAULT_DISPLAY_PLAYER_CHAR << "\033[0m";
+				cout << "\033[96m" << DEFAULT_DISPLAY_PLAYER_CHAR << "\033[0m";
 				break;
 			default:
 				cout << "\033[31m" << 'U' << "\033[0m";
@@ -912,10 +989,11 @@ void Maze::Print(bool showPlayers/* =FALSE */)
 void Maze::PrintWithPlayers()
 {
 	//insert players into data structure
-	for (int i = 0; i < m_exit.size(); i++)
+	for (unsigned i = 0; i < m_players.size(); i++)
 	{
-		m_players[i].RemoveLocked();
 		if (m_players[i].path.size() == 0)
+			continue;
+		if (m_players[i].GetFinished())
 			continue;
 		if (!m_players[i].GetFinished())
 			SetData(m_players[i].GetCurrentMazePos(), 'P');
@@ -925,17 +1003,22 @@ void Maze::PrintWithPlayers()
 	this->Print(true);
 
 	//clear and update player pos
-	for (int i = 0; i < m_exit.size(); i++)
+	for (unsigned i = 0; i < m_players.size(); i++)
 	{
 		if (m_players[i].path.size() == 0)
 			continue;
+		if (m_players[i].GetFinished())
+			continue;
+
+		//player finished
 		if (GetDataCrossCount(m_players[i].GetCurrentMazePos(), 'S') >= 1)
 		{
+			m_players[i].RemoveLocked();
 			SetData(m_players[i].GetCurrentMazePos(), ' ');
 			m_players[i].SetFinished();
 		}
-		//check if next pos can be moved to 
-		if (GetData(m_players[i].GetNextMazePos()) != 'P' && m_players[i].GetCurrentStepIndex() != 0)
+		//check if next pos can moved to //&& m_players[i].GetCurrentStepIndex() != 0
+		if (GetData(m_players[i].GetNextMazePos()) != 'P')
 		{
 			SetData(m_players[i].GetCurrentMazePos(), ' ');
 			m_players[i].Progress();
