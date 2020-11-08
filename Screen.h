@@ -47,7 +47,7 @@ template<typename T>
 inline void Screen::Input(T* container, string text)
 {
 	string screenText;
-	screenText += "\t" + text + "\n";
+	screenText += "\t" + text;
 	cout << screenText;
 	cin.clear();
 	cin.sync();
@@ -58,7 +58,7 @@ template<typename T>
 inline void Screen::InputEX(T* container, string text)
 {
 	string screenText;
-	screenText += "\t" + text + "\n";
+	screenText += "\t" + text;
 	cout << screenText;
 	*container = _getch();
 }

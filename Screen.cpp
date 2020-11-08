@@ -58,7 +58,7 @@ void Screen::PrintMainMenu()
 	screenText += "\t|         7. Exit                             |\n";
 	screenText += "\t|                                             |\n";
 	screenText += "\t+---------------------------------------------+\n";
-	screenText += "\tPlease input number to select function you need:\n\t";
+	screenText += "\tPlease input number to select function you need:\n";
 	cout << screenText;
 }
 
@@ -76,6 +76,14 @@ void Screen::PrintCredits()
 	cout << screenText;
 }
 
+/// <summary>
+/// display function for playback feature
+/// </summary>
+/// <param name="size">size of maze</param>
+/// <param name="exitCount">exit count number</param>
+/// <param name="activePlayerCount">active players number</param>
+/// <param name="solveState">if maze solve able</param>
+/// <param name="playerState">if play locked</param>
 void Screen::PrintMazeInfo(Size2D size, int exitCount, int activePlayerCount, Maze::MAZE_SOLVABLE_E solveState, bool playerState)
 {
 	string screenText;
@@ -153,8 +161,6 @@ void Screen::SetWndSize(Vector2 size)
 
 void Screen::SetWndSize(int width, int height)
 {
-	//SMALL_RECT rc = { 0,0, width - 1, height - 1 }; // reset wnd pos and size
-	//SetConsoleWindowInfo(hOut, true, &rc);
 	string strControlText = "mode con cols=" + to_string(width) + " lines=" + to_string(height);
 	system(strControlText.c_str());
 }
@@ -167,5 +173,5 @@ void Screen::SetBufSize(Vector2 size)
 void Screen::SetBufSize(int width, int height)
 {
 	COORD coordSize = { (short)width, (short)height };
-	SetConsoleScreenBufferSize(hOut, coordSize); // Reset buffer size
+	SetConsoleScreenBufferSize(hOut, coordSize); //set buffer size
 }
