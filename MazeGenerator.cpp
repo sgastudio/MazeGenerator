@@ -118,7 +118,7 @@ void previewMaze()
 	screenAgent.SetBufSize(mazeAgent.GetSize() + 2);
 	screenAgent.SetWndSize(mazeAgent.GetSize() + 2);
 	//print maze
-	mazeAgent.Print();
+	mazeAgent.Print(mazeAgent.CheckPlayerPathFinderMode());
 	screenAgent.Pause();
 }
 
