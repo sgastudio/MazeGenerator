@@ -17,6 +17,13 @@ public:
 		m_currentIndex = 0;
 		m_start = 0;
 	};
+	Player(Pos2D startPos)
+	{
+		m_locked = false;
+		m_finished = false;
+		m_currentIndex = 0;
+		m_start = startPos;
+	};
 	~Player()
 	{
 		path.clear();
@@ -41,7 +48,9 @@ public:
 	}
 	Vector2 GetCurrentMazePos()
 	{
-		return path[m_currentIndex];
+		if(path.size()>0)
+			return path[m_currentIndex];
+		return this->m_start;
 	}
 	Vector2 GetNextMazePos()
 	{
@@ -58,7 +67,10 @@ public:
 	{
 		m_start = pos;
 	}
-
+	Pos2D GetStartPos()
+	{
+		return m_start;
+	}
 	void SetLocked()
 	{
 		m_locked = true;
