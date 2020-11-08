@@ -11,6 +11,8 @@
 #include <ctime>
 #include <windows.h>
 
+
+
 class Maze {
 protected:
 	short* m_data;
@@ -18,8 +20,8 @@ protected:
 	Vector2 m_size;
 
 	Vector2 m_start;
-	int* m_exit;
-	int m_exitCount;
+
+	vector<int> m_exit;
 	int m_requireExitCount;
 
 	vector<Pos2D> m_pathPoints;
@@ -41,6 +43,11 @@ protected:
 	//insert exit points after generation
 	void _InsertExitPoints();
 public:
+	enum MAZE_SOLVABLE_E {
+		Not = 0,
+		Partially,
+		Fully,
+	};
 	Maze();
 	Maze(Vector2 sizeLimit, int difficulty, int exitCount = 1);
 	~Maze();
@@ -56,6 +63,11 @@ public:
 	short* GetDataPointer(Vector2 pos);
 	Vector2 GetPosNearEdge(Vector2 pos);
 	Vector2 GetSize();
+
+	MAZE_SOLVABLE_E GetSolvable();
+	int GetPlayerDataCount();
+	bool GetPlayerState();
+	int GetExitCount();
 
 	int GetActivePlayerCount();
 

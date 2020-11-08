@@ -41,8 +41,8 @@ Maze::~Maze()
 {
 	if (m_data != NULL)
 		delete[] m_data;
-	if (m_exit != NULL)
-		delete[] m_exit;
+	//if (m_exit != NULL)
+	//	delete[] m_exit;
 	if (m_players != NULL)
 		delete[] m_players;
 	if (m_pathPoints.size() > 0)
@@ -55,15 +55,16 @@ void Maze::Init()
 	if (m_data != NULL)
 		delete[] m_data;
 	m_data = NULL;
-	if (m_exit != NULL)
-		delete[] m_exit;
-	m_exit = NULL;
+	//if (m_exit != NULL)
+	//	delete[] m_exit;
+	//m_exit = NULL;
+	m_exit.clear();
 	if (m_players != NULL)
 		delete[] m_players;
 	m_players = NULL;
 	m_size = Vector2();
 	m_start = Vector2();
-	m_exitCount = 0;
+	//m_exitCount = 0;
 	m_requireExitCount = 0;
 	m_difficulty = 1;
 
@@ -76,11 +77,13 @@ void Maze::Init(Vector2 sizeLimit)
 		delete[] m_data;
 	m_data = new short[(m_size.x) * (m_size.y)];
 	m_start = Vector2();
-	if (m_exit != NULL)
-		delete[] m_exit;
-	m_exit = new int[(m_size.x + m_size.y) * 2];
+	
+	//if (m_exit != NULL)
+	//	delete[] m_exit;
+	//m_exit = new int[(m_size.x + m_size.y) * 2];
+	m_exit.clear();
 	m_pathPoints.clear();
-	m_exitCount = 0;
+	//m_exitCount = 0;
 }
 
 void Maze::Init(Vector2 sizeLimit, int difficulty, int exitCount)
@@ -92,18 +95,19 @@ void Maze::Init(Vector2 sizeLimit, int difficulty, int exitCount)
 		delete[] m_data;
 	m_data = new short[(m_size.x) * (m_size.y)];
 	m_start = Vector2();
-	if (m_exit != NULL)
-		delete[] m_exit;
-	m_exit = NULL;
+	//if (m_exit != NULL)
+	//	delete[] m_exit;
+	//m_exit = NULL;
+	m_exit.clear();
 	m_pathPoints.clear();
-	m_exitCount = 0;
+	//m_exitCount = 0;
 }
 
 void Maze::InitPlayers()
 {
 	if (m_players != NULL)
 		delete[] m_players;
-	m_players = new Player[m_exitCount];
+	m_players = new Player[m_exit.size()];
 }
 
 short Maze::GetData(Vector2 pos)
@@ -155,22 +159,73 @@ Vector2 Maze::GetSize()
 	return m_size;
 }
 
+Maze::MAZE_SOLVABLE_E Maze::GetSolvable()
+{
+
+	int deadCount=0;
+	for(int i=0;i<m_exit.size();i++)
+	{
+		if (m_players[i].path.size() == 0)
+			deadCount++;
+	}
+
+	if(deadCount==0)
+		return MAZE_SOLVABLE_E::Fully;
+	if(deadCount>0 && deadCount< m_exit.size())
+		return MAZE_SOLVABLE_E::Partially;
+	if (deadCount == m_exit.size())
+		return MAZE_SOLVABLE_E::Not;
+}
+
+int Maze::GetPlayerDataCount()
+{
+	int count = 0;
+	for (int i = 0; i < m_size.x * m_size.y; i++)
+	{
+		if (GetData(i) == 'P')
+			count++;
+	}
+	return count;
+}
+
+bool Maze::GetPlayerState()
+{
+	for (int i = 0; i < m_exit.size(); i++)
+	{
+		if (m_players[i].GetLockState() == true)
+		{
+			return false;
+		}
+	}
+	return true;
+}
+
+int Maze::GetExitCount()
+{
+	return m_exit.size();
+}
+
 int Maze::GetActivePlayerCount()
 {
 	int counter = 0;
-	for (int i = 0; i < m_exitCount; i++)
+	for (int i = 0; i < m_exit.size(); i++)
 	{
-		if (!m_players[i].GetFinished())
+		if (!m_players[i].GetFinished() && m_players[i].path.size()>0)
 			counter++;
 	}
 	return counter;
 }
 
+/// <summary>
+/// Set value of maze size control var
+/// </summary>
+/// <param name="size">size to be set</param>
 void Maze::SetSize(Size2D size)
 {
 	if (size.x > 0 && size.y > 0)
 		m_size = size;
 }
+
 
 bool Maze::CheckGenerated()
 {
@@ -275,11 +330,11 @@ bool Maze::LoadFromFile(string fileName)
 		return false;
 	}
 
-	//calc maze size
+	//validate maze data
 	Size2D calculatedSize;
 	string testString;
 	int widthCheck = -1;
-	int i = 0;
+	
 	while (!inputFile.eof())
 	{
 		getline(inputFile, testString);
@@ -291,8 +346,9 @@ bool Maze::LoadFromFile(string fileName)
 				widthCheck = testString.length();
 		}
 	}
-
 	inputFile.clear();
+
+	//caculate the size
 	inputFile.seekg(0, ios::beg);
 	getline(inputFile, testString);
 	calculatedSize.x = testString.length();
@@ -316,8 +372,9 @@ bool Maze::LoadFromFile(string fileName)
 			}
 			if (testString[j] == DEFAULT_DISPLAY_EXIT_CHAR)
 			{
-				m_exit[m_exitCount] = i * m_size.x + j;
-				m_exitCount++;
+				//m_exit[m_exitCount] = i * m_size.x + j;
+				//m_exitCount++;
+				m_exit.push_back(i * m_size.x + j);
 				m_requireExitCount++;
 			}
 			m_data[i * m_size.x + j] = testString[j];
@@ -545,45 +602,53 @@ void Maze::_InsertStartPoint()
 /// </summary>
 void Maze::_InsertExitPoints()
 {
-	m_exit = new int[(m_size.x + m_size.y) * 2];
-	m_exitCount = 0;
+	//m_exit = new int[(m_size.x + m_size.y) * 2];
+	//m_exitCount = 0;
 	for (int i = 1; i < (m_size.x - 1); i++)
 	{
 		if (GetData(Vector2(i, 1)) == DEFAULT_STORAGE_ROUTE_CHAR)
 		{
-			m_exit[m_exitCount] = i;
-			m_exitCount++;
+			m_exit.push_back(i);
+			//m_exit[m_exitCount] = i;
+			//m_exitCount++;
 		}
 		if (GetData(Vector2(i, m_size.y - 2)) == DEFAULT_STORAGE_ROUTE_CHAR)
 		{
-			m_exit[m_exitCount] = i + (m_size.y - 1) * m_size.x;
-			m_exitCount++;
+			m_exit.push_back(i + (m_size.y - 1) * m_size.x);
+			//m_exitCount++;
 		}
 	}
 	for (int i = 1; i < (m_size.y - 1); i++)
 	{
 		if (GetData(Vector2(1, i)) == DEFAULT_STORAGE_ROUTE_CHAR)
 		{
-			m_exit[m_exitCount] = i * m_size.x;
-			m_exitCount++;
+			m_exit.push_back(i * m_size.x);
+			//m_exitCount++;
 		}
 		if (GetData(Vector2(m_size.x - 2, i)) == DEFAULT_STORAGE_ROUTE_CHAR)
 		{
-			m_exit[m_exitCount] = (i + 1) * m_size.x - 1;
-			m_exitCount++;
+			((i + 1) * m_size.x - 1);
+			//m_exitCount++;
 		}
 	}
-
-	for (int i = 0; i < m_exitCount; i++)
+	
+	
+	while (m_exit.size() > m_requireExitCount)
+	{
+		vector<int>::iterator it = m_exit.begin();
+		m_exit.erase(it+rand() % m_exit.size() );
+	}
+	/*
+	for (int i = 0; i < m_exit.size(); i++)
 	{
 		int randIndex = rand() % m_exitCount;
 		int tempInt = m_exit[i];
 		m_exit[i] = m_exit[randIndex];
 		m_exit[randIndex] = tempInt;
 	}
-	if (m_requireExitCount < m_exitCount)
-		m_exitCount = m_requireExitCount;
-	for (int i = 0; i < m_exitCount; i++)
+	//if (m_requireExitCount < m_exitCount)
+	//	m_exitCount = m_requireExitCount;*/
+	for (int i = 0; i < m_exit.size(); i++)
 	{
 		SetData(m_exit[i], DEFAULT_STORAGE_EXIT_CHAR);
 	}
@@ -633,7 +698,7 @@ void Maze::FindPath(int algorithmIndex)
 /// </summary>
 void Maze::FindPathDeepFirst()
 {
-	for (int i = 0; i < m_exitCount; i++)
+	for (int i = 0; i < m_exit.size(); i++)
 	{
 		Vector2 exitPos = Vector2::Get2DPos(m_size.x, m_exit[i]);
 		_DeepFirstFindRecursion(GetPosNearEdge(exitPos));
@@ -655,7 +720,7 @@ void Maze::FindPathDeepFirst()
 void Maze::FindPlayerPathAStar()
 {
 	ClearPath();
-	for (int i = 0; i < m_exitCount; i++)
+	for (int i = 0; i < m_exit.size(); i++)
 	{
 		Vector2 exitPos = Vector2::Get2DPos(m_size.x, m_exit[i]);
 		_PlayerAStarFindProcess(GetPosNearEdge(exitPos), m_start, i);
@@ -667,7 +732,7 @@ void Maze::FindPlayerPathAStar()
 /// </summary>
 void Maze::FindPathAStar()
 {
-	for (int i = 0; i < m_exitCount; i++)
+	for (int i = 0; i < m_exit.size(); i++)
 	{
 		Vector2 exitPos = Vector2::Get2DPos(m_size.x, m_exit[i]);
 		_AStarFindProcess(GetPosNearEdge(exitPos), m_start);
@@ -847,8 +912,11 @@ void Maze::Print(bool showPlayers/* =FALSE */)
 void Maze::PrintWithPlayers()
 {
 	//insert players into data structure
-	for (int i = 0; i < m_exitCount; i++)
+	for (int i = 0; i < m_exit.size(); i++)
 	{
+		m_players[i].RemoveLocked();
+		if (m_players[i].path.size() == 0)
+			continue;
 		if (!m_players[i].GetFinished())
 			SetData(m_players[i].GetCurrentMazePos(), 'P');
 	}
@@ -857,29 +925,24 @@ void Maze::PrintWithPlayers()
 	this->Print(true);
 
 	//clear and update player pos
-	for (int i = 0; i < m_exitCount; i++)
+	for (int i = 0; i < m_exit.size(); i++)
 	{
+		if (m_players[i].path.size() == 0)
+			continue;
+		if (GetDataCrossCount(m_players[i].GetCurrentMazePos(), 'S') >= 1)
+		{
+			SetData(m_players[i].GetCurrentMazePos(), ' ');
+			m_players[i].SetFinished();
+		}
 		//check if next pos can be moved to 
 		if (GetData(m_players[i].GetNextMazePos()) != 'P' && m_players[i].GetCurrentStepIndex() != 0)
 		{
 			SetData(m_players[i].GetCurrentMazePos(), ' ');
-			if (GetDataCrossCount(m_players[i].GetCurrentMazePos(), 'S') >= 1)
-			{
-				m_players[i].SetFinished();
-			}
 			m_players[i].Progress();
 		}
 		else
 		{
-			//check and prevant from dead lock
-			for (int j = 0; j < m_exitCount; j++)
-			{
-				if (m_players[j].GetNextMazePos() == m_players[i].GetCurrentMazePos() && m_players[i].GetNextMazePos() == m_players[j].GetCurrentMazePos())
-				{
-					m_players[i].SetFinished();
-					SetData(m_players[i].GetCurrentMazePos(), ' ');
-				}
-			}
+			m_players[i].SetLocked();
 		}
 
 	}
