@@ -28,6 +28,7 @@
     <ClInclude Include="ASNode.h" />
     <ClInclude Include="AStarFinder.h" />
     <ClInclude Include="maze.h" />
+    <ClInclude Include="MazeGenerator.h" />
     <ClInclude Include="player.h" />
     <ClInclude Include="Screen.h" />
     <ClInclude Include="vector2.h" />

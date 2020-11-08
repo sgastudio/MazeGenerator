@@ -1,5 +1,6 @@
 #pragma once
 #include "vector2.h"
+#include "maze.h"
 
 #include <iostream>
 #include <cstdlib>
@@ -22,26 +23,28 @@ public:
 	void PrintLogo();
 	void PrintMainMenu();
 	void PrintCredits();
+	void PrintMazeInfo(Size2D, int, int, Maze::MAZE_SOLVABLE_E, bool);
 	void Pause();
-	char PauseEX(string displayText);
+	char PauseEX(string);
 	void Clear();
-	void SetColor(string colorText);
-	void SetFont();
-	void SetMsg(string text);
-	void SetMsgError(string text);
-	void SetMsgWarn(string text);
-	void SetMsgGood(string text);
-	void SetWndTitle(LPCWSTR text);
-	void SetWndSize(Vector2 size);
-	void SetWndSize(int width, int height);
-	void SetBufSize(Vector2 size);
-	void SetBufSize(int width, int height);
+	void SetColor(string);
+	void SetMsg(string);
+	void SetMsgError(string);
+	void SetMsgWarn(string);
+	void SetMsgGood(string);
+	void SetWndTitle(LPCWSTR);
+	void SetWndSize(Vector2);
+	void SetWndSize(int, int);
+	void SetBufSize(Vector2);
+	void SetBufSize(int, int);
 	template <typename T>
-	void Input(T* container, string text);
-	string InputString(string text);
-	bool InputBool(string text);
-	int InputInt(string text);
-	Vector2 InputVector2(string text);
+	void Input(T*, string);
+	template<typename T>
+	void InputEX(T*, string);
+	string InputString(string);
+	bool InputBool(string);
+	int InputInt(string);
+	Vector2 InputVector2(string);
 };
 
 template<typename T>
@@ -51,4 +54,13 @@ inline void Screen::Input(T* container, string text)
 	screenText += "\t" + text + "\n\t";
 	cout << screenText;
 	cin >> *container;
+}
+
+template<typename T>
+inline void Screen::InputEX(T* container, string text)
+{
+	string screenText;
+	screenText += "\t" + text + "\n\t";
+	cout << screenText;
+	*container = _getch();
 }

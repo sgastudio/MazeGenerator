@@ -74,7 +74,28 @@ void Screen::PrintCredits()
 	screenText += "\t|                                             |\n";
 	screenText += "\t+---------------------------------------------+\n";
 	cout << screenText;
+}
 
+void Screen::PrintMazeInfo(Size2D size, int exitCount, int activePlayerCount, Maze::MAZE_SOLVABLE_E solveState, bool playerState)
+{
+	string screenText;
+	screenText += "Maze\n";
+	screenText += to_string(size.x) + "x" + to_string(size.y) +" " + to_string(activePlayerCount) +"/"+ to_string(exitCount) + " Players\n";
+	switch (solveState)
+	{
+	case Maze::MAZE_SOLVABLE_E::Fully:
+		screenText += "\033[92mFully Solvable\033[0m\n";
+		break;
+	case Maze::MAZE_SOLVABLE_E::Partially:
+		screenText += "\033[93mPartially Solvable\033[0m\n";
+		break;
+	case Maze::MAZE_SOLVABLE_E::Not:
+	default:
+		screenText += "\033[91mNot Solvable\033[0m\n";
+	}
+	screenText += (playerState ? "\033[92mPlayer Good\033[0m" : "\033[91mPlayer Locked\033[0m");
+	screenText += "\n\n";
+	cout << screenText;
 }
 
 void Screen::Pause()
@@ -99,20 +120,6 @@ void Screen::SetColor(string colorText)
 	system(text.c_str());
 }
 
-void Screen::SetFont()
-{
-	/*
-	CONSOLE_FONT_INFOEX info;
-	GetCurrentConsoleFontEx(hOut, false, &info);
-	cout << info.nFont << " " << info.dwFontSize.X << " " << info.dwFontSize.Y << " " << info.FontFamily<<" "<<info.cbSize<<" "<< info.FontWeight<<" "<<info.FaceName;
-	Sleep(5);
-	info.FontFamily = 0;
-	//00D8F7E4
-	SetCurrentConsoleFontEx(hOut, false, &info);
-	GetCurrentConsoleFontEx(hOut, false, &info);
-	cout <<endl<< info.nFont << " " << info.dwFontSize.X << " " << info.dwFontSize.Y << " " << info.FontFamily << " " << info.cbSize << " " << info.FontWeight << " " << info.FaceName;
-	*/
-}
 
 void Screen::SetMsg(string text)
 {
