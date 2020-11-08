@@ -192,6 +192,10 @@ Maze::MAZE_SOLVABLE_E Maze::GetSolvable()
 	return MAZE_SOLVABLE_E::Not;
 }
 
+/// <summary>
+/// get player's number
+/// </summary>
+/// <returns>the amount of players</returns>
 int Maze::GetPlayerDataCount()
 {
 	int count = 0;
@@ -203,6 +207,10 @@ int Maze::GetPlayerDataCount()
 	return count;
 }
 
+/// <summary>
+/// get all player state
+/// </summary>
+/// <returns>return false if any player locked(waited)</returns>
 bool Maze::GetPlayerState()
 {
 	for (unsigned i = 0; i < m_exit.size(); i++)
@@ -215,11 +223,19 @@ bool Maze::GetPlayerState()
 	return true;
 }
 
+/// <summary>
+/// get exit number
+/// </summary>
+/// <returns>exit number</returns>
 int Maze::GetExitCount()
 {
 	return m_exit.size();
 }
 
+/// <summary>
+/// get active player number
+/// </summary>
+/// <returns>active player number</returns>
 int Maze::GetActivePlayerCount()
 {
 	int counter = 0;
@@ -241,7 +257,10 @@ void Maze::SetSize(Size2D size)
 		m_size = size;
 }
 
-
+/// <summary>
+/// check if maze have been generated or loaded
+/// </summary>
+/// <returns>if generated/loaded return true</returns>
 bool Maze::CheckGenerated()
 {
 	if (m_size.x != 0 && m_size.y != 0)
@@ -250,6 +269,10 @@ bool Maze::CheckGenerated()
 		return false;
 }
 
+/// <summary>
+/// check if there are players already in the maze
+/// </summary>
+/// <returns>return true if there is player in the maze data</returns>
 bool Maze::CheckPlayerPathFinderMode()
 {
 	if (m_players.size() > 0)
@@ -267,20 +290,17 @@ bool Maze::CheckOnEdge(Vector2 pos)
 	return pos.x == 0 || pos.x == m_size.x - 1 || pos.y == 0 || pos.y == m_size.y - 1;
 }
 
-bool Maze::CheckInsideCenterRectangle(Vector2 pos, Vector2 quarterSize)
-{
-	bool verticalCheck = pos.x >= m_size.x / 2 - quarterSize.x && pos.x <= m_size.x / 2 + quarterSize.x;
-	bool horizontalCheck = pos.y >= m_size.y / 2 - quarterSize.y && pos.y <= m_size.y / 2 + quarterSize.y;
-	return verticalCheck && horizontalCheck;
-}
-
+/// <summary>
+/// set data to specific pos in m_data
+/// </summary>
+/// <param name="pos">data position</param>
+/// <param name="inputData">value to be set</param>
 void Maze::SetData(Vector2 pos, short inputData)
 {
 	if (pos.x<0 || pos.x>m_size.x - 1 || pos.y<0 || pos.y>m_size.y - 1)
 		return;
 	m_data[pos.Get1DIndex(m_size.x)] = inputData;
 }
-
 void Maze::SetData(int x, int y, short inputData)
 {
 	SetData(Vector2(x, y), inputData);
@@ -296,6 +316,12 @@ void Maze::SetData(int index, short inputData)
 	m_data[index] = inputData;
 }
 
+/// <summary>
+/// set maze data to input value in side of sepecific rectangle
+/// </summary>
+/// <param name="center">center of rectangle</param>
+/// <param name="quarterSize">half width and height of rectangle</param>
+/// <param name="inputData">value to be set</param>
 void Maze::SetDataRectangle(Vector2 center, Vector2 quarterSize, short inputData)
 {
 	quarterSize = quarterSize / 2;
@@ -340,6 +366,11 @@ void Maze::SetDataSurrounding(short blockData)
 	}
 }
 
+/// <summary>
+/// load maze from file
+/// </summary>
+/// <param name="fileName">file name</param>
+/// <returns>true if load success</returns>
 bool Maze::LoadFromFile(string fileName)
 {
 	//openfile
@@ -348,9 +379,7 @@ bool Maze::LoadFromFile(string fileName)
 
 	//check avaliable
 	if (!inputFile.is_open())
-	{
 		return false;
-	}
 
 	//validate maze data
 	Size2D calculatedSize;
@@ -417,7 +446,11 @@ bool Maze::LoadFromFile(string fileName)
 	return true;
 }
 
-//save maze data to file
+/// <summary>
+/// save maze data to file
+/// </summary>
+/// <param name="fileName">file name</param>
+/// <returns>true if save success</returns>
 bool Maze::SaveToFile(string fileName)
 {
 	//open file
@@ -449,7 +482,7 @@ bool Maze::SaveToFile(string fileName)
 			case DEFAULT_STORAGE_EXIT_CHAR:
 				outputFile << DEFAULT_DISPLAY_EXIT_CHAR;
 				break;
-				//hide the path to exit
+			//hide the path to exit
 			case DEFAULT_STORAGE_PATH_CHAR:
 				outputFile << DEFAULT_DISPLAY_ROUTE_CHAR;
 				break;
@@ -501,7 +534,7 @@ void Maze::GenerateDeepFisrt()
 }
 
 /// <summary>
-/// Recursion style for DFS algorithm maze generation
+/// Recursion function for DFS algorithm maze generation
 /// </summary>
 /// <param name="pos">position for check</param>
 void Maze::_DeepFirstGenerateRecursion(Vector2 pos)
@@ -546,7 +579,11 @@ void Maze::_DeepFirstGenerateRecursion(Vector2 pos)
 	}
 }
 
-
+/// <summary>
+/// Recursion function for DFS path finding
+/// </summary>
+/// <param name="pos">start position</param>
+/// <returns>true if path found</returns>
 bool Maze::_DeepFirstFindRecursion(Vector2 pos)
 {
 	if (GetData(pos) == DEFAULT_STORAGE_START_CHAR)
@@ -561,13 +598,7 @@ bool Maze::_DeepFirstFindRecursion(Vector2 pos)
 		SetData(pos, DEFAULT_STORAGE_PATH_CHAR);
 		return true;
 	}
-	/*
-	if (CheckInsideCenterRectangle(pos, m_size/20))
-	{
-		SetData(pos, DEFAULT_STORAGE_PATH_CHAR);
-		return true;
-	}
-	*/
+
 	if (GetData(pos) == DEFAULT_STORAGE_PATH_CHAR)
 		return true;
 	if (GetDataCrossCount(pos, ' ') < 1 )
@@ -585,7 +616,7 @@ bool Maze::_DeepFirstFindRecursion(Vector2 pos)
 			direction[4] = { 0, distance.y / abs(distance.y) };
 	}
 
-
+	//randomize directions
 	for (int i = 0; i < 4; i++)
 	{
 		int randDirection = rand() % 4;
@@ -633,52 +664,38 @@ void Maze::_InsertStartPoint()
 /// </summary>
 void Maze::_InsertExitPoints()
 {
-	//m_exit = new int[(m_size.x + m_size.y) * 2];
-	//m_exitCount = 0;
+	//horziontal
 	for (int i = 1; i < (m_size.x - 1); i++)
 	{
 		if (GetData(Vector2(i, 1)) == DEFAULT_STORAGE_ROUTE_CHAR)
 		{
 			m_exit.push_back(i);
-			//m_exit[m_exitCount] = i;
-			//m_exitCount++;
 		}
 		if (GetData(Vector2(i, m_size.y - 2)) == DEFAULT_STORAGE_ROUTE_CHAR)
 		{
 			m_exit.push_back(i + (m_size.y - 1) * m_size.x);
-			//m_exitCount++;
 		}
 	}
+	//vertical
 	for (int i = 1; i < (m_size.y - 1); i++)
 	{
 		if (GetData(Vector2(1, i)) == DEFAULT_STORAGE_ROUTE_CHAR)
 		{
 			m_exit.push_back(i * m_size.x);
-			//m_exitCount++;
 		}
 		if (GetData(Vector2(m_size.x - 2, i)) == DEFAULT_STORAGE_ROUTE_CHAR)
 		{
 			((i + 1) * m_size.x - 1);
-			//m_exitCount++;
 		}
 	}
 	
-	
+	//drop uncessary exits
 	while (m_exit.size() > m_requireExitCount)
 	{
 		vector<int>::iterator it = m_exit.begin();
 		m_exit.erase(it+rand() % m_exit.size() );
 	}
-	/*
-	for (int i = 0; i < m_exit.size(); i++)
-	{
-		int randIndex = rand() % m_exitCount;
-		int tempInt = m_exit[i];
-		m_exit[i] = m_exit[randIndex];
-		m_exit[randIndex] = tempInt;
-	}
-	//if (m_requireExitCount < m_exitCount)
-	//	m_exitCount = m_requireExitCount;*/
+	//insert into maze data
 	for (unsigned i = 0; i < m_exit.size(); i++)
 	{
 		SetData(m_exit[i], DEFAULT_STORAGE_EXIT_CHAR);
@@ -686,7 +703,7 @@ void Maze::_InsertExitPoints()
 }
 
 /// <summary>
-/// Clear pathfiner solution of the maze for inner data storage
+/// Clear pathfiner solution of the maze for inner maze data
 /// </summary>
 void Maze::ClearPath()
 {
@@ -756,10 +773,10 @@ void Maze::FindPathDeepFirst()
 
 	for (int i = 0; i < m_size.x * m_size.y; i++)
 	{
-		if (m_data[i] == 'o')
+		if (m_data[i] == DEFAULT_STORAGE_PATH_CHAR)
 		{
 			m_pathPoints.push_back(Vector2::Get2DPos(m_size.x, i));
-			m_data[i] = ' ';
+			m_data[i] = DEFAULT_STORAGE_ROUTE_CHAR;
 		}
 	}
 }
@@ -817,6 +834,12 @@ void Maze::FindPathAStar()
 	
 }
 
+/// <summary>
+/// A* algorithm path finder function
+/// </summary>
+/// <param name="startPos">postion for start finding</param>
+/// <param name="endPos">the end of finding</param>
+/// <returns>true if path found</returns>
 bool Maze::_AStarFindProcess(Vector2 startPos, Vector2 endPos)
 {
 	//allocate workspace
@@ -839,6 +862,7 @@ bool Maze::_AStarFindProcess(Vector2 startPos, Vector2 endPos)
 			break;
 		}
 
+		//check 4 directions of the currentPos
 		for (int i = 0; i < 4; i++)
 		{
 			nextPos = currentPos + direction[i];
@@ -879,6 +903,13 @@ bool Maze::_AStarFindProcess(Vector2 startPos, Vector2 endPos)
 	return true;
 }
 
+/// <summary>
+/// player's A* path finding algorithm
+/// </summary>
+/// <param name="startPos">position to start</param>
+/// <param name="endPos">position of finish</param>
+/// <param name="playerIndex">player index in m_players</param>
+/// <returns>true if path found</returns>
 bool Maze::_PlayerAStarFindProcess(Vector2 startPos, Vector2 endPos, int playerIndex)
 {
 	//allocate workspace
@@ -986,6 +1017,9 @@ void Maze::Print(bool showPlayers/* =FALSE */)
 	}
 }
 
+/// <summary>
+/// Print and process player movement, work with plackback feature 
+/// </summary>
 void Maze::PrintWithPlayers()
 {
 	//insert players into data structure
@@ -1002,6 +1036,11 @@ void Maze::PrintWithPlayers()
 	//print maze with players
 	this->Print(true);
 
+	
+}
+
+
+void Maze::UpdatePlayers() {
 	//clear and update player pos
 	for (unsigned i = 0; i < m_players.size(); i++)
 	{
