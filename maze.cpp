@@ -22,16 +22,6 @@ Maze::Maze()
 	Init();
 }
 
-/*
-Maze::Maze(Vector2 sizeLimit, int exitCount)
-{
-	Init(sizeLimit, exitCount);
-	m_start = Vector2();
-	m_exit = NULL;
-	m_exitCount = 0;
-	m_difficulty = 1;
-}*/
-
 Maze::Maze(Vector2 sizeLimit, int difficulty, int exitCount)
 {
 	Init(sizeLimit, difficulty, exitCount);
@@ -56,17 +46,10 @@ void Maze::Init()
 	if (m_data != NULL)
 		delete[] m_data;
 	m_data = NULL;
-	//if (m_exit != NULL)
-	//	delete[] m_exit;
-	//m_exit = NULL;
 	m_exit.clear();
-	//if (m_players != NULL)
-	//	delete[] m_players;
-	//m_players = NULL;
 	InitPlayers();
 	m_size = Vector2();
 	m_start = Vector2();
-	//m_exitCount = 0;
 	m_requireExitCount = 0;
 	m_difficulty = 1;
 
@@ -80,13 +63,9 @@ void Maze::Init(Vector2 sizeLimit)
 	m_data = new short[(m_size.x) * (m_size.y)];
 	m_start = Vector2();
 	InitPlayers();
-	//if (m_exit != NULL)
-	//	delete[] m_exit;
-	//m_exit = new int[(m_size.x + m_size.y) * 2];
 	m_exit.clear();
 	m_pathPoints.clear();
 	m_requireExitCount = 0;
-	//m_exitCount = 0;
 }
 
 void Maze::Init(Vector2 sizeLimit, int difficulty, int exitCount)
@@ -98,22 +77,14 @@ void Maze::Init(Vector2 sizeLimit, int difficulty, int exitCount)
 		delete[] m_data;
 	m_data = new short[(m_size.x) * (m_size.y)];
 	m_start = Vector2();
-	//if (m_exit != NULL)
-	//	delete[] m_exit;
-	//m_exit = NULL;
 	InitPlayers();
 	m_exit.clear();
 	m_pathPoints.clear();
-	//m_exitCount = 0;
 }
 
 void Maze::InitPlayers()
 {
 	m_players.clear();
-	/*
-	if (m_players != NULL)
-		delete[] m_players;
-	m_players = new Player[m_exit.size()];*/
 }
 
 int Maze::LimitDifficult(int val)
@@ -423,8 +394,6 @@ bool Maze::LoadFromFile(string fileName)
 			}
 			if (testString[j] == DEFAULT_DISPLAY_EXIT_CHAR)
 			{
-				//m_exit[m_exitCount] = i * m_size.x + j;
-				//m_exitCount++;
 				m_exit.push_back(i * m_size.x + j);
 				m_requireExitCount++;
 			}
@@ -470,7 +439,6 @@ bool Maze::SaveToFile(string fileName)
 	{
 		for (int j = 0; j < m_size.x; j++)
 		{
-			//outputFile << (char)m_data[i * m_size.x + j];
 			switch (m_data[i * m_size.x + j])
 			{
 			case DEFAULT_STORAGE_WALL_CHAR:
@@ -522,8 +490,6 @@ void Maze::Generate()
 void Maze::GenerateDeepFisrt()
 {
 	SetDataAll(DEFAULT_STORAGE_WALL_CHAR);
-	//SetDataSurrounding(' ');
-	//SetData(this->m_start, ' ');
 	this->_DeepFirstGenerateRecursion(this->m_start);
 	Vector2 centerAreaSize = Vector2(m_size.x / 10, m_size.y / 10);
 	centerAreaSize.LimitMin(Vector2(3, 3));
@@ -639,7 +605,6 @@ bool Maze::_DeepFirstFindRecursion(Vector2 pos)
 		{
 			if (_DeepFirstFindRecursion(nextPos) == true)
 			{
-				//this->SetData(pos, DEFAULT_STORAGE_ROUTE_CHAR);
 				this->SetData(pos, DEFAULT_STORAGE_PATH_CHAR);
 				return true;
 			}
@@ -897,7 +862,6 @@ bool Maze::_AStarFindProcess(Vector2 startPos, Vector2 endPos)
 	//store path to m_pathPoints for display
 	do {
 		currentPos = AFinder.GetData(currentPos).parent;
-		//m_data[currentPos.Get1DIndex(m_size.x)] = 'Z';
 		m_pathPoints.push_back(currentPos);
 	} while (AFinder.GetData(currentPos).parent != currentPos);
 	return true;
@@ -966,9 +930,7 @@ bool Maze::_PlayerAStarFindProcess(Vector2 startPos, Vector2 endPos, int playerI
 	//store path to m_pathPoints for display
 	do {
 		currentPos = AFinder.GetData(currentPos).parent;
-		//m_data[currentPos.Get1DIndex(m_size.x)] = 'Z';
 		m_players[playerIndex].path.push_back(currentPos);
-		//m_pathPoints.push_back(currentPos);
 	} while (AFinder.GetData(currentPos).parent != currentPos);
 	m_players[playerIndex].ResetIndex();
 	return true;
