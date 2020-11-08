@@ -141,7 +141,7 @@ void Screen::SetMsgGood(string text)
 	this->SetMsg("\033[92m" + text + "\033[0m");
 }
 
-void Screen::SetWndTitle(LPCWSTR text)
+void Screen::SetWndTitle(LPCSTR text)
 {
 	SetConsoleTitle(text);
 }

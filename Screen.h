@@ -32,7 +32,7 @@ public:
 	void SetMsgError(string);
 	void SetMsgWarn(string);
 	void SetMsgGood(string);
-	void SetWndTitle(LPCWSTR);
+	void SetWndTitle(LPCSTR);
 	void SetWndSize(Vector2);
 	void SetWndSize(int, int);
 	void SetBufSize(Vector2);
@@ -53,6 +53,8 @@ inline void Screen::Input(T* container, string text)
 	string screenText;
 	screenText += "\t" + text + "\n\t";
 	cout << screenText;
+	cin.clear();
+	cin.sync();
 	cin >> *container;
 }
 
