@@ -4,6 +4,7 @@
 #include <vector>
 
 class Player {
+	bool m_locked;
 	bool m_finished;
 	Pos2D m_start;
 	int m_currentIndex;
@@ -11,6 +12,7 @@ public:
 	vector<Pos2D> path;
 	Player()
 	{
+		m_locked = false;
 		m_finished = false;
 		m_currentIndex = 0;
 		m_start = 0;
@@ -55,5 +57,18 @@ public:
 	void SetStartPos(Pos2D pos)
 	{
 		m_start = pos;
+	}
+
+	void SetLocked()
+	{
+		m_locked = true;
+	}
+	void RemoveLocked()
+	{
+		m_locked = false;
+	}
+	bool GetLockState()
+	{
+		return m_locked;
 	}
 };
