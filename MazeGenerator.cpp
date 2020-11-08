@@ -30,14 +30,14 @@ bool generateMaze()
 
 	//ask for parameters
 	//ask for size
-	screenAgent.Input(&mazeSize, "How big the maze should be? (e.g. 10 10)\n\tMin edge length should be 10.");
+	screenAgent.Input(&mazeSize, "How big the maze should be? (e.g. 10 10)\n\tMin edge length should be 10.\n\t");
 	mazeSize.LimitMin(Vector2(10, 10));
 	//ask for exit count
-	screenAgent.Input(&exitCount,"How many exits do you want?\n\t(min=1 max=" + to_string((mazeSize.x + mazeSize.y) * 2 - 4) + ")");
+	screenAgent.Input(&exitCount, "How many exits do you want?\n\t(min=1 max=" + to_string((mazeSize.x + mazeSize.y) * 2 - 4) + ")\n\t");
 	Vector2::LimitInt(&exitCount, Vector2(1, (mazeSize.x + mazeSize.y) * 2 - 4));
 	//ask for density
 	densityMax = min(mazeSize.x, mazeSize.y);
-	screenAgent.Input(&density,"How dense should it be?\n\t(min=1 max=" + to_string(densityMax) + ")");
+	screenAgent.Input(&density, "How dense should it be?\n\t(min=1 max=" + to_string(densityMax) + ")\n\t");
 	Vector2::LimitInt(&density, Vector2(1, densityMax));
 
 	//generate maze
@@ -54,7 +54,7 @@ void loadMaze()
 	string fileAddr;
 	screenAgent.PrintLogo();
 	//ask and check filename
-	screenAgent.Input(&fileAddr, "Please the filename you want to load:");
+	screenAgent.Input(&fileAddr, "Please the filename you want to load:\n\t");
 	if (fileAddr.empty() || fileAddr == "")
 	{
 		screenAgent.SetMsgWarn("Filename cannot be empty!");
@@ -79,7 +79,7 @@ void saveMaze()
 
 	screenAgent.PrintLogo();
 	//ask and check filename
-	screenAgent.Input(&fileAddr, "Please the filename you want to save:");
+	screenAgent.Input(&fileAddr, "Please the filename you want to save:\n\t");
 	if (fileAddr.empty() || fileAddr == "")
 	{
 		screenAgent.SetMsgWarn("Filename cannot be empty!");
@@ -104,11 +104,14 @@ void previewMaze()
 	}
 	screenAgent.PrintLogo();
 	//ask if pathfinding is needed
-	 screenAgent.InputEX(&needOfPathfinding, "Do you want to see the path to exit? \n\t(0 = No, 1 = Yes)");
-	 screenAgent.InputEX(&findingAlgorithm, "Which Kind of pathfinding method do you want? \n\t(0 = A* Algorithm, 1 = DFS Algorithm)");
+	screenAgent.Input(&needOfPathfinding, "Do you want to see the path to exit? \n\t(0 = No, 1 = Yes)\n\t");
+
 	//ask for pathfinding algorithm if it is needed
 	if (needOfPathfinding)
+	{
+		screenAgent.Input(&findingAlgorithm, "Which Kind of pathfinding method do you want? \n\t(0 = A* Algorithm, 1 = DFS Algorithm)\n\t");
 		mazeAgent.FindPath(findingAlgorithm);
+	}
 	else
 		mazeAgent.ClearPath();
 	//set console window size
@@ -134,9 +137,9 @@ void playbackMaze()
 	screenAgent.PrintLogo();
 
 	//ask for series generation
-	screenAgent.Input(&playbackLoopTime, "How many simliar mazes do you want to check? \n\t(from 0 - unlimited)");
+	screenAgent.Input(&playbackLoopTime, "How many simliar mazes do you want to check? \n\t(from 0 - unlimited)\n\t");
 	Vector2::LimitInt(&playbackLoopTime, Vector2(0, INT_MAX));
-	
+
 	//set windows size
 	mazeSize = mazeAgent.GetSize() + 1;
 	mazeSize.y += 9;
@@ -158,6 +161,7 @@ void playbackMaze()
 			{
 				return;
 			}
+			mazeAgent.UpdatePlayers();
 		} while (mazeAgent.GetActivePlayerCount() > 0);
 
 		playbackLoopTime--;
@@ -165,7 +169,7 @@ void playbackMaze()
 		{
 			mazeAgent.Generate();
 			mazeAgent.InitPlayers();
-		
+
 		}
 	}
 }
@@ -187,7 +191,7 @@ int main(void)
 		screenAgent.Clear();
 		screenAgent.SetWndSize(63, 40);
 		screenAgent.Menu();
-		screenAgent.InputEX(&input,"");
+		screenAgent.InputEX(&input, "");
 
 		screenAgent.Clear();
 		switch (input)
