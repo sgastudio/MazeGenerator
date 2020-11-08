@@ -125,13 +125,13 @@ void playbackMaze()
 		return;
 	}
 	screenAgent.PrintLogo();
-	playbackLoopTime = screenAgent.InputInt("How many simliar mazes do you want to check? \n\t(at least 1)");
-	Vector2::LimitInt(&playbackLoopTime, Vector2(1, INT_MAX));
+	playbackLoopTime = screenAgent.InputInt("How many simliar mazes do you want to check? \n\t(from 0 - unlimited)");
+	Vector2::LimitInt(&playbackLoopTime, Vector2(0, INT_MAX));
 	mazeSize = mazeAgent.GetSize() + 1;
 	mazeSize.y += 9;
 	screenAgent.SetBufSize(mazeSize);
 	screenAgent.SetWndSize(mazeSize);
-	while (playbackLoopTime > 0)
+	while (playbackLoopTime >= 0)
 	{
 		mazeAgent.FindPlayerPathAStar();
 		do
@@ -141,7 +141,7 @@ void playbackMaze()
 			mazeAgent.PrintWithPlayers();
 			inputChar = screenAgent.PauseEX("\nPress\n'e' = exit\nOther key = continue ");
 		} while (inputChar != 'e' && mazeAgent.GetActivePlayerCount() > 0);
-		
+		playbackLoopTime--;
 		if (inputChar == 'e')
 		{
 			return;
@@ -150,11 +150,11 @@ void playbackMaze()
 		{
 			return;
 		}
-		playbackLoopTime--;
-		if (playbackLoopTime > 0)
+		if (playbackLoopTime >= 0)
 		{
 			mazeAgent.Generate();
 			mazeAgent.InitPlayers();
+		
 		}
 	}
 }
