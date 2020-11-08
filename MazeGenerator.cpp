@@ -29,12 +29,15 @@ bool generateMaze()
 	screenAgent.PrintLogo();
 
 	//ask for parameters
-	mazeSize = screenAgent.InputVector2("How big the maze should be? (e.g. 10 10)\n\tMin edge length should be 10.");
+	//ask for size
+	screenAgent.Input(&mazeSize, "How big the maze should be? (e.g. 10 10)\n\tMin edge length should be 10.");
 	mazeSize.LimitMin(Vector2(10, 10));
-	exitCount = screenAgent.InputInt("How many exits do you want?\n\t(min=1 max=" + to_string((mazeSize.x + mazeSize.y) * 2 - 4) + ")");
+	//ask for exit count
+	screenAgent.Input(&exitCount,"How many exits do you want?\n\t(min=1 max=" + to_string((mazeSize.x + mazeSize.y) * 2 - 4) + ")");
 	Vector2::LimitInt(&exitCount, Vector2(1, (mazeSize.x + mazeSize.y) * 2 - 4));
-	densityMax = max(mazeSize.x, mazeSize.y) / 10;
-	density = screenAgent.InputInt("How dense should it be?\n\t(min=1 max=" + to_string(densityMax) + ")");
+	//ask for density
+	densityMax = min(mazeSize.x, mazeSize.y);
+	screenAgent.Input(&density,"How dense should it be?\n\t(min=1 max=" + to_string(densityMax) + ")");
 	Vector2::LimitInt(&density, Vector2(1, densityMax));
 
 	//generate maze
@@ -92,6 +95,7 @@ void saveMaze()
 void previewMaze()
 {
 	bool needOfPathfinding = false;
+	int findingAlgorithm = 0;
 	//check maze available
 	if (!mazeAgent.CheckGenerated())
 	{
@@ -100,10 +104,11 @@ void previewMaze()
 	}
 	screenAgent.PrintLogo();
 	//ask if pathfinding is needed
-	needOfPathfinding = screenAgent.InputBool("Do you want to see the path to exit? \n\t(0 = No, 1 = Yes)");
+	 screenAgent.InputEX(&needOfPathfinding, "Do you want to see the path to exit? \n\t(0 = No, 1 = Yes)");
+	 screenAgent.InputEX(&findingAlgorithm, "Which Kind of pathfinding method do you want? \n\t(0 = A* Algorithm, 1 = DFS Algorithm)");
 	//ask for pathfinding algorithm if it is needed
 	if (needOfPathfinding)
-		mazeAgent.FindPath(screenAgent.InputInt("Which Kind of pathfinding method do you want? \n\t(0 = A* Algorithm, 1 = DFS Algorithm)"));
+		mazeAgent.FindPath(findingAlgorithm);
 	else
 		mazeAgent.ClearPath();
 	//set console window size
@@ -118,19 +123,27 @@ void playbackMaze()
 {
 	int playbackLoopTime = 0;
 	char inputChar;
+	//check if maze created or loaded
 	Vector2 mazeSize;
 	if (!mazeAgent.CheckGenerated())
 	{
 		screenAgent.SetMsgWarn("Please generate/load the maze before playback!");
 		return;
 	}
+
 	screenAgent.PrintLogo();
-	playbackLoopTime = screenAgent.InputInt("How many simliar mazes do you want to check? \n\t(from 0 - unlimited)");
+
+	//ask for series generation
+	screenAgent.Input(&playbackLoopTime, "How many simliar mazes do you want to check? \n\t(from 0 - unlimited)");
 	Vector2::LimitInt(&playbackLoopTime, Vector2(0, INT_MAX));
+	
+	//set windows size
 	mazeSize = mazeAgent.GetSize() + 1;
 	mazeSize.y += 9;
 	screenAgent.SetBufSize(mazeSize);
 	screenAgent.SetWndSize(mazeSize);
+
+	//display loop
 	while (playbackLoopTime >= 0)
 	{
 		mazeAgent.FindPlayerPathAStar();
@@ -140,16 +153,14 @@ void playbackMaze()
 			screenAgent.PrintMazeInfo(mazeAgent.GetSize(), mazeAgent.GetExitCount(), mazeAgent.GetActivePlayerCount(), mazeAgent.GetSolvable(), mazeAgent.GetPlayerState());
 			mazeAgent.PrintWithPlayers();
 			inputChar = screenAgent.PauseEX("\nPress\n'e' = exit\nOther key = continue ");
-		} while (inputChar != 'e' && mazeAgent.GetActivePlayerCount() > 0);
+			//exit function
+			if (inputChar == 'e')
+			{
+				return;
+			}
+		} while (mazeAgent.GetActivePlayerCount() > 0);
+
 		playbackLoopTime--;
-		if (inputChar == 'e')
-		{
-			return;
-		}
-		if (inputChar == 's')
-		{
-			return;
-		}
 		if (playbackLoopTime >= 0)
 		{
 			mazeAgent.Generate();

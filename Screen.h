@@ -41,17 +41,13 @@ public:
 	void Input(T*, string);
 	template<typename T>
 	void InputEX(T*, string);
-	string InputString(string);
-	bool InputBool(string);
-	int InputInt(string);
-	Vector2 InputVector2(string);
 };
 
 template<typename T>
 inline void Screen::Input(T* container, string text)
 {
 	string screenText;
-	screenText += "\t" + text + "\n\t";
+	screenText += "\t" + text + "\n";
 	cout << screenText;
 	cin.clear();
 	cin.sync();
@@ -62,7 +58,7 @@ template<typename T>
 inline void Screen::InputEX(T* container, string text)
 {
 	string screenText;
-	screenText += "\t" + text + "\n\t";
+	screenText += "\t" + text + "\n";
 	cout << screenText;
 	*container = _getch();
 }
