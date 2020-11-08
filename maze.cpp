@@ -146,6 +146,10 @@ Vector2 Maze::GetSize()
 	return m_size;
 }
 
+/// <summary>
+/// Get the maze state if it is solvable
+/// </summary>
+/// <returns>0-not solvable 1-partially solvable 2-fully solvable</returns>
 Maze::MAZE_SOLVABLE_E Maze::GetSolvable()
 {
 
