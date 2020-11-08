@@ -101,10 +101,11 @@ void previewMaze()
 	screenAgent.PrintLogo();
 	//ask if pathfinding is needed
 	needOfPathfinding = screenAgent.InputBool("Do you want to see the path to exit? \n\t(0 = No, 1 = Yes)");
-	mazeAgent.ClearPath();
 	//ask for pathfinding algorithm if it is needed
 	if (needOfPathfinding)
 		mazeAgent.FindPath(screenAgent.InputInt("Which Kind of pathfinding method do you want? \n\t(0 = A* Algorithm, 1 = DFS Algorithm)"));
+	else
+		mazeAgent.ClearPath();
 	//set console window size
 	screenAgent.SetBufSize(mazeAgent.GetSize() + 2);
 	screenAgent.SetWndSize(mazeAgent.GetSize() + 2);
@@ -116,6 +117,7 @@ void previewMaze()
 void playbackMaze()
 {
 	int playbackLoopTime = 0;
+	char inputChar;
 	Vector2 mazeSize;
 	if (!mazeAgent.CheckGenerated())
 	{
@@ -123,24 +125,37 @@ void playbackMaze()
 		return;
 	}
 	screenAgent.PrintLogo();
-	playbackLoopTime = screenAgent.InputInt("How many mazes do you want to check? \n\t(at least 1)");
+	playbackLoopTime = screenAgent.InputInt("How many simliar mazes do you want to check? \n\t(at least 1)");
 	Vector2::LimitInt(&playbackLoopTime, Vector2(1, INT_MAX));
 	mazeSize = mazeAgent.GetSize() + 1;
-	mazeSize.y += 10;
+	mazeSize.y += 9;
 	screenAgent.SetBufSize(mazeSize);
 	screenAgent.SetWndSize(mazeSize);
 	while (playbackLoopTime > 0)
 	{
-		mazeAgent.InitPlayers();
 		mazeAgent.FindPlayerPathAStar();
 		do
 		{
 			screenAgent.Clear();
 			screenAgent.PrintMazeInfo(mazeAgent.GetSize(), mazeAgent.GetExitCount(), mazeAgent.GetActivePlayerCount(), mazeAgent.GetSolvable(), mazeAgent.GetPlayerState());
 			mazeAgent.PrintWithPlayers();
-		} while (screenAgent.PauseEX("\nPress\n'e' = exit\n's' = Save progression\nOther key = continue ") != 'e' && mazeAgent.GetActivePlayerCount() > 0);
-		mazeAgent.Generate();
+			inputChar = screenAgent.PauseEX("\nPress\n'e' = exit\nOther key = continue ");
+		} while (inputChar != 'e' && mazeAgent.GetActivePlayerCount() > 0);
+		
+		if (inputChar == 'e')
+		{
+			return;
+		}
+		if (inputChar == 's')
+		{
+			return;
+		}
 		playbackLoopTime--;
+		if (playbackLoopTime > 0)
+		{
+			mazeAgent.Generate();
+			mazeAgent.InitPlayers();
+		}
 	}
 }
 
@@ -154,7 +169,7 @@ void displayCredits()
 int main(void)
 {
 	char input;
-	screenAgent.SetWndTitle(TEXT("Maze Generator"));
+	screenAgent.SetWndTitle("Maze Generator");
 	screenAgent.SetMsg("Set to 8x8 Dot Font for better experience");
 
 	do {
