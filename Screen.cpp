@@ -149,9 +149,9 @@ void Screen::SetMsgGood(string text)
 	this->SetMsg("\033[92m" + text + "\033[0m");
 }
 
-void Screen::SetWndTitle(LPCSTR text)
+void Screen::SetWndTitle(string text)
 {
-	SetConsoleTitle(text);
+	SetConsoleTitleA(text.c_str());
 }
 
 void Screen::SetWndSize(Vector2 size)

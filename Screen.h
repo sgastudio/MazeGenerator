@@ -32,7 +32,7 @@ public:
 	void SetMsgError(string);
 	void SetMsgWarn(string);
 	void SetMsgGood(string);
-	void SetWndTitle(LPCSTR);
+	void SetWndTitle(string);
 	void SetWndSize(Vector2);
 	void SetWndSize(int, int);
 	void SetBufSize(Vector2);
