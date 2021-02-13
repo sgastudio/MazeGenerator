@@ -1,3 +1,6 @@
+/*
+A Start class for maze generate and search
+*/
 #pragma once
 
 #include "vector2.h"
