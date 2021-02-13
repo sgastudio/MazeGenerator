@@ -19,14 +19,18 @@ protected:
 public:
 	Screen();
 	~Screen();
+
 	void Menu();
 	void PrintLogo();
 	void PrintMainMenu();
 	void PrintCredits();
 	void PrintMazeInfo(Size2D, int, int, Maze::MAZE_SOLVABLE_E, bool);
+
 	void Pause();
 	char PauseEX(string);
+
 	void Clear();
+
 	void SetColor(string);
 	void SetMsg(string);
 	void SetMsgError(string);
@@ -37,6 +41,7 @@ public:
 	void SetWndSize(int, int);
 	void SetBufSize(Vector2);
 	void SetBufSize(int, int);
+
 	template <typename T>
 	void Input(T*, string);
 	template<typename T>
