@@ -90,5 +90,7 @@ public:
 	void Print(bool showPaths = false);
 	void PrintWithPlayers();
 	void UpdatePlayers();
+
+	void Test();
 };
 
